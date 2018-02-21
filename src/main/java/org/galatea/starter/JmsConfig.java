@@ -2,31 +2,22 @@
 package org.galatea.starter;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import java.util.function.BiConsumer;
+import javax.jms.ConnectionFactory;
+import javax.jms.Message;
 import lombok.extern.slf4j.Slf4j;
-
 import org.galatea.starter.domain.TradeAgreement;
-import org.galatea.starter.utils.translation.ITranslator;
 import org.galatea.starter.entrypoint.messagecontracts.Messages.TradeAgreementMessage;
 import org.galatea.starter.utils.FuseTraceRepository;
 import org.galatea.starter.utils.jms.FuseJmsListenerContainerFactory;
+import org.galatea.starter.utils.translation.ITranslator;
 import org.galatea.starter.utils.translation.TranslationException;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
-import org.springframework.jms.annotation.JmsListenerConfigurer;
 import org.springframework.jms.config.JmsListenerContainerFactory;
-import org.springframework.jms.config.JmsListenerEndpointRegistrar;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.converter.MessageConverter;
-import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
-import org.springframework.messaging.handler.annotation.support.MessageHandlerMethodFactory;
-
-import java.util.function.BiConsumer;
-
-import javax.jms.ConnectionFactory;
-import javax.jms.Message;
 
 @Slf4j
 @Configuration
