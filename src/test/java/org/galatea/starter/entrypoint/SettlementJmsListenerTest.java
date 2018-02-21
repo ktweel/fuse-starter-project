@@ -14,6 +14,7 @@ import org.galatea.starter.ASpringTest;
 import org.galatea.starter.domain.TradeAgreement;
 import org.galatea.starter.entrypoint.messagecontracts.Messages.TradeAgreementMessage;
 import org.galatea.starter.service.SettlementService;
+import org.galatea.starter.utils.ObjectSupplier;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +33,12 @@ public class SettlementJmsListenerTest extends ASpringTest {
   @Autowired
   protected JmsTemplate jmsTemplate;
 
+  @Autowired
+  protected ObjectSupplier<TradeAgreementMessage> messageSupplier;
+
+  @Autowired
+  protected ObjectSupplier<TradeAgreement> agreementSupplier;
+
   @MockBean
   private SettlementService mockSettlementService;
 
@@ -40,8 +47,8 @@ public class SettlementJmsListenerTest extends ASpringTest {
 
   @Test
   public void testSettleOneAgreement() {
-    TradeAgreementMessage message = getMessage();
-    TradeAgreement agreement = getAgreement();
+    TradeAgreementMessage message = messageSupplier.get();
+    TradeAgreement agreement = agreementSupplier.get();
 
     log.info("Agreement message to put on queue {}", message);
     List<TradeAgreement> agreements = Arrays.asList(agreement);
@@ -52,15 +59,5 @@ public class SettlementJmsListenerTest extends ASpringTest {
     // We use verify since the jms listener doesn't actually do anything with the returns from the
     // service
     verify(mockSettlementService, timeout(10000)).spawnMissions(agreements);
-  }
-
-  private TradeAgreementMessage getMessage() {
-    return TradeAgreementMessage.newBuilder().setInstrument("IBM").setInternalParty("INT-1")
-        .setExternalParty("EXT-1").setBuySell("B").setQty(100).build();
-  }
-
-  private TradeAgreement getAgreement() {
-    return TradeAgreement.builder().id(0l).instrument("IBM").internalParty("INT-1")
-        .externalParty("EXT-1").buySell("B").qty(100d).build();
   }
 }
