@@ -1,10 +1,15 @@
 
 package org.galatea.starter;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 
+import org.galatea.starter.domain.TradeAgreement;
+import org.galatea.starter.utils.translation.ITranslator;
+import org.galatea.starter.entrypoint.messagecontracts.Messages.TradeAgreementMessage;
 import org.galatea.starter.utils.FuseTraceRepository;
 import org.galatea.starter.utils.jms.FuseJmsListenerContainerFactory;
+import org.galatea.starter.utils.translation.TranslationException;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +40,26 @@ public class JmsConfig implements JmsListenerConfigurer {
   public BiConsumer<Message, Exception> failedMessageConsumer() {
     return (msg, err) -> log.error(
         "Message {} failed to process after retries.  Removing message from queue", msg, err);
+  }
+
+  /**
+   * @return a translator to convert binary protobuf messages to trade agreements.
+   */
+  @Bean
+  public ITranslator<byte[], TradeAgreement> tradeAgreementMessageTranslator () {
+    return msg -> {
+      TradeAgreementMessage message;
+
+      try {
+        message = TradeAgreementMessage.parseFrom(msg);
+      } catch (InvalidProtocolBufferException e) {
+        throw new TranslationException("Could not translate the message to a trade agreement.", e);
+      }
+
+      return TradeAgreement.builder().id(message.getId()).instrument(message.getInstrument())
+          .internalParty(message.getInternalParty()).externalParty(message.getExternalParty())
+          .buySell(message.getBuySell()).qty(message.getQty()).build();
+    };
   }
 
   @Bean
