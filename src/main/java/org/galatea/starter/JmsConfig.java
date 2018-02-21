@@ -31,7 +31,7 @@ import javax.jms.Message;
 @Slf4j
 @Configuration
 @EnableJms
-public class JmsConfig implements JmsListenerConfigurer {
+public class JmsConfig {
 
   /**
    * @return an implementation of failed message consumer that simply logs the message.
@@ -60,11 +60,6 @@ public class JmsConfig implements JmsListenerConfigurer {
           .internalParty(message.getInternalParty()).externalParty(message.getExternalParty())
           .buySell(message.getBuySell()).qty(message.getQty()).build();
     };
-  }
-
-  @Bean
-  public MessageConverter jacksonJmsMessageConverter() {
-    return new MappingJackson2MessageConverter();
   }
 
   /**
@@ -96,25 +91,6 @@ public class JmsConfig implements JmsListenerConfigurer {
     // TODO: override any defaults in the listener factory before we return the object
 
     return listenerFactory;
-  }
-
-
-  /**
-   * @return a new handler factory that uses a different message converter than the default one.
-   */
-  @Bean
-  public MessageHandlerMethodFactory jmsHandlerMethodFactory() {
-    DefaultMessageHandlerMethodFactory factory = new DefaultMessageHandlerMethodFactory();
-
-    // Note that we use the spring messaging converter instead of the spring jms converter. The two
-    // behave differently.
-    factory.setMessageConverter(jacksonJmsMessageConverter());
-    return factory;
-  }
-
-  @Override
-  public void configureJmsListeners(final JmsListenerEndpointRegistrar registrar) {
-    registrar.setMessageHandlerMethodFactory(jmsHandlerMethodFactory());
   }
 }
 
