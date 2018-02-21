@@ -17,6 +17,9 @@ public class TradeAgreementTranslator {
   }
 
   public byte[] translateFromAgreement(TradeAgreement agreement) {
+    if (agreement == null)
+      return TradeAgreementMessage.getDefaultInstance().toByteArray();
+
     TradeAgreementMessage message = TradeAgreementMessage.newBuilder().setId(agreement.getId())
         .setInstrument(agreement.getInstrument()).setInternalParty(agreement.getInternalParty())
         .setExternalParty(agreement.getExternalParty()).setBuySell(agreement.getBuySell())
