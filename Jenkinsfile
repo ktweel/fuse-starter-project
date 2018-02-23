@@ -33,37 +33,13 @@ pipeline {
         stage('Quality gate') {
             steps {
                 // Just in case something goes wrong, pipeline will be killed after a timeout
-                timeout(time: 1, unit: 'MINUTES') {
+                timeout(time: 2, unit: 'MINUTES') {
                     script {
                         def qg = waitForQualityGate()
                         if (qg.status != 'OK') {
                             error "Pipeline aborted due to quality gate failure: ${qg.status}"
                         }
                     }
-                }
-            }
-        }
-        stage('Checkstyle') {
-            steps {
-                sh 'mvn checkstyle:check'
-            }
-            // using the following results in an error in the pipeline - ERROR: None of the test reports contained any result
-            //post {
-            //    always {
-            //        junit 'target/checkstyle-result.xml'
-            //    }
-            //}
-            // this will simply show a blank report if the checkstyle check is successful
-            post {
-                failure {
-                    publishHTML (target: [
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: false,
-                        keepAll: true,
-                        reportDir: 'target',
-                        reportFiles: 'checkstyle-result.xml',
-                        reportName: 'Checkstyle report'
-                    ])
                 }
             }
         }
@@ -86,8 +62,11 @@ pipeline {
             }
         }
         stage('Integration tests') {
-            when {            	
-                expression { BRANCH_NAME ==~ /^PR-\d+$/ }
+            when {
+            	anyOf {
+	                expression { BRANCH_NAME ==~ /^PR-\d+$/ }
+            	 	branch 'develop'   
+            	}
             }
             steps {
             	sleep time:90, unit: 'SECONDS'
@@ -105,6 +84,7 @@ pipeline {
             }
             steps {
                 echo 'Running performance tests...'
+                echo 'No performance tests defined yet.'
             }
         }
         stage('Shutdown') {
