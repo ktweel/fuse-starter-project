@@ -24,7 +24,7 @@ import java.util.Set;
 public class SettlementJmsListener {
 
   @NonNull
-  protected SettlementService settlementService;
+  a protected SettlementService settlementService;
 
   /**
    * Spawns Missions for any TradeAgreements pulled off the jms queue.
