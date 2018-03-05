@@ -25,7 +25,7 @@ pipeline {
         stage('SonarQube analysis') {
             steps {
             	populateTargetBranch()
-            	echo "Branch name: ${env.BRANCH_NAME} Target branch: ${targetBranch}"            	                 
+            	echo "Branch name: ${env.BRANCH_NAME} Target branch: ${targetBranch}"
                 withSonarQubeEnv('SonarCloud FUSE') {
                   sh "mvn -Dsonar.branch.name=${env.GIT_BRANCH} -Dsonar.branch.target=${targetBranch} sonar:sonar"
                 }
@@ -129,11 +129,21 @@ pipeline {
         }
         failure {
             notifySlack("Failed", 'fuse-java-builds', "danger", true)
+            notifyFailedEmail()
         }
         aborted {
             notifySlack("Aborted", 'fuse-java-builds', "#d3d3d3", false)
         }
     }
+}
+
+def notifyFailedEmail() {
+    emailext(
+            subject: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+            body: """<p>STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p> 
+            <p>Check console output at "<a href="${env.BUILD_URL}">${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>"</p>""",
+            recipientProviders: [[$class: 'CulpritsRecipientProvider']]
+    )
 }
 
 def isDeployBranch() {
