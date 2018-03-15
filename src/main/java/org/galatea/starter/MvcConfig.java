@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-@Slf4j
+@Slf4j 
 @Configuration
 @EnableWebMvc
 @EnableConfigurationProperties(TraceProperties.class)

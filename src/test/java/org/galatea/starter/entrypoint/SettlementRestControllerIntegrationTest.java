@@ -1,21 +1,8 @@
 
 package org.galatea.starter.entrypoint;
 
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
-
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
-
-import org.galatea.starter.domain.SettlementMission;
-import org.galatea.starter.domain.SettlementMission.SettlementMissionBuilder;
-import org.galatea.starter.domain.TradeAgreement;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import java.util.List;
+import static org.junit.Assert.assertTrue;
 
 import feign.Feign;
 import feign.Headers;
@@ -24,6 +11,18 @@ import feign.RequestLine;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
 
+import java.util.List;
+
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+
+import org.galatea.starter.domain.SettlementMission;
+import org.galatea.starter.domain.SettlementMission.SettlementMissionBuilder;
+import org.galatea.starter.domain.TradeAgreement;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -43,7 +42,7 @@ public class SettlementRestControllerIntegrationTest {
 
   @Test
   public void testMissionCreation() {
-    String fuseHostName = System.getProperty("fuse.sandbox.url");
+    String fuseHostName = System.getProperty("fuse.sandbox.url"); 
     if (fuseHostName == null || fuseHostName.isEmpty()) {
       // TODO: the base URL should probably be moved to a src/test/resources properties file
       fuseHostName = "http://fuse-rest-dev.cfapps.io";

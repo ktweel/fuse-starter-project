@@ -4,6 +4,8 @@ package org.galatea.starter.utils;
 import static org.springframework.util.ReflectionUtils.doWithMethods;
 import static org.springframework.util.ReflectionUtils.invokeMethod;
 
+import java.lang.reflect.Modifier;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -12,7 +14,7 @@ import org.apache.commons.lang3.builder.DiffResult;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.util.ReflectionUtils.MethodFilter;
 
-import java.lang.reflect.Modifier;
+
 
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

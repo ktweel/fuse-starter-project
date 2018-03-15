@@ -1,6 +1,7 @@
 autoEnabled=true
 eclipse.preferences.version=1
 extraProperties=
+fileExclusions=
 moduleKey=org.galatea\:fuse-starter-java
 projectKey=org.galatea\:fuse-starter-java
-serverId=SonarCloud/default
+serverId=SonarCloud/galatea

@@ -1,6 +1,5 @@
 package org.galatea.starter.entrypoint;
 
-
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
@@ -16,8 +15,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import junitparams.FileParameters;
 import junitparams.JUnitParamsRunner;
+
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -39,10 +43,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -120,15 +120,15 @@ public class SettlementRestControllerTest extends ASpringTest {
     given(this.mockSettlementService.findMission(MISSION_ID_1))
         .willReturn(Optional.of(testMission));
 
-    ResultActions resultActions =
-        this.mvc.perform(get("/settlementEngine/mission/" + MISSION_ID_1 + "?requestId=1234")
-            .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
+    ResultActions resultActions = this.mvc
+        .perform(get("/settlementEngine/mission/" + MISSION_ID_1 + "?requestId=1234")
+            .accept(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isOk())
 
-            .andExpect(jsonPath("$.id", is(MISSION_ID_1.intValue())))
-            .andExpect(jsonPath("$.externalParty", is(externapParty)))
-            .andExpect(jsonPath("$.instrument", is(instrument)))
-            .andExpect(jsonPath("$.direction", is(direction)))
-            .andExpect(jsonPath("$.qty", is(qty)));
+        .andExpect(jsonPath("$.id", is(MISSION_ID_1.intValue())))
+        .andExpect(jsonPath("$.externalParty", is(externapParty)))
+        .andExpect(jsonPath("$.instrument", is(instrument)))
+        .andExpect(jsonPath("$.direction", is(direction))).andExpect(jsonPath("$.qty", is(qty)));
 
     verifyAuditHeaders(resultActions);
   }
@@ -139,10 +139,9 @@ public class SettlementRestControllerTest extends ASpringTest {
 
     given(this.mockSettlementService.findMission(msnId)).willReturn(Optional.empty());
 
-    ResultActions resultActions = this.mvc
-        .perform(get("/settlementEngine/mission/" + msnId + "?requestId=1234")
-            .accept(MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(status().isNotFound());
+    ResultActions resultActions =
+        this.mvc.perform(get("/settlementEngine/mission/" + msnId + "?requestId=1234")
+            .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isNotFound());
     verifyAuditHeaders(resultActions);
   }
 
@@ -150,8 +149,9 @@ public class SettlementRestControllerTest extends ASpringTest {
   public void testIncorrectlyFormattedAgreement() throws Exception {
     String expectedMessage = "Incorrectly formatted message.  Please consult the documentation.";
 
-    this.mvc.perform(post("/settlementEngine?requestId=1234")
-        .contentType(MediaType.APPLICATION_JSON_VALUE).content("invalidAgreementJson"))
+    this.mvc
+        .perform(post("/settlementEngine?requestId=1234")
+            .contentType(MediaType.APPLICATION_JSON_VALUE).content("invalidAgreementJson"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.status", is(HttpStatus.BAD_REQUEST.name())))
         .andExpect(jsonPath("$.message", is(expectedMessage)));
@@ -162,8 +162,9 @@ public class SettlementRestControllerTest extends ASpringTest {
     DataAccessException exception = new TestDataAccessException();
     when(mockSettlementService.findMission(MISSION_ID_1)).thenThrow(exception);
 
-    this.mvc.perform(get("/settlementEngine/mission/" + MISSION_ID_1 + "?requestId=1234")
-        .accept(MediaType.APPLICATION_JSON_VALUE))
+    this.mvc
+        .perform(get("/settlementEngine/mission/" + MISSION_ID_1 + "?requestId=1234")
+            .accept(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.status", is(HttpStatus.INTERNAL_SERVER_ERROR.name())))
         .andExpect(jsonPath("$.message", is("An internal application error occurred.")));
@@ -178,7 +179,7 @@ public class SettlementRestControllerTest extends ASpringTest {
   }
 
   /**
-   * Verifies required audit fields are present
+   * Verifies required audit fields are present.
    *
    * @param resultActions The resultActions object wrapping the response
    * @throws Exception On any validation exception

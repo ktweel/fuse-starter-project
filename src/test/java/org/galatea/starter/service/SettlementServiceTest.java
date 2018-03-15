@@ -1,21 +1,21 @@
 package org.galatea.starter.service;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 
+import java.util.Collections;
+
+import java.util.Optional;
+import java.util.Set;
 import org.galatea.starter.ASpringTest;
 import org.galatea.starter.domain.SettlementMission;
 import org.galatea.starter.domain.TradeAgreement;
 import org.galatea.starter.domain.rpsy.ISettlementMissionRpsy;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.Matchers;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
 
 public class SettlementServiceTest extends ASpringTest {
   @MockBean
@@ -65,7 +65,7 @@ public class SettlementServiceTest extends ASpringTest {
     TradeAgreement testTradeAgreement = TradeAgreement.builder().id(45L).instrument("instr-1")
         .internalParty("icp-1").externalParty("ecp-1").buySell("B").qty(4500.0).build();
 
-    given(this.mockSettlementMissionRpsy.save(Mockito.anyList()))
+    given(this.mockSettlementMissionRpsy.save(Matchers.anyList()))
         .willReturn(Collections.singletonList(testSettlementMission));
 
     SettlementService service =

@@ -1,8 +1,10 @@
 
 package org.galatea.starter;
 
+import java.util.function.BiConsumer;
+import javax.jms.ConnectionFactory;
+import javax.jms.Message;
 import lombok.extern.slf4j.Slf4j;
-
 import org.galatea.starter.utils.FuseTraceRepository;
 import org.galatea.starter.utils.jms.FuseJmsListenerContainerFactory;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
@@ -17,11 +19,6 @@ import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
 import org.springframework.messaging.handler.annotation.support.MessageHandlerMethodFactory;
-
-import java.util.function.BiConsumer;
-
-import javax.jms.ConnectionFactory;
-import javax.jms.Message;
 
 @Slf4j
 @Configuration
@@ -61,18 +58,19 @@ public class JmsConfig implements JmsListenerConfigurer {
     FuseJmsListenerContainerFactory listenerFactory =
         new FuseJmsListenerContainerFactory(tracerRpsy, failedMessageConsumer);
 
-    // This provides all boot's default to this factory, including the message converter
+    // This provides all boot's default to this factory, including the message
+    // converter
     // Note that we don't use a caching connection factory due to this:
     //
     // http://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/
     // jms/listener/DefaultMessageListenerContainer.html
     configurer.configure(listenerFactory, queueConnectionFactory);
 
-    // TODO: override any defaults in the listener factory before we return the object
+    // TODO: override any defaults in the listener factory before we return the
+    // object
 
     return listenerFactory;
   }
-
 
   /**
    * @return a new handler factory that uses a different message converter than the default one.
@@ -81,7 +79,8 @@ public class JmsConfig implements JmsListenerConfigurer {
   public MessageHandlerMethodFactory jmsHandlerMethodFactory() {
     DefaultMessageHandlerMethodFactory factory = new DefaultMessageHandlerMethodFactory();
 
-    // Note that we use the spring messaging converter instead of the spring jms converter. The two
+    // Note that we use the spring messaging converter instead of the spring jms
+    // converter. The two
     // behave differently.
     factory.setMessageConverter(jacksonJmsMessageConverter());
     return factory;
@@ -92,5 +91,3 @@ public class JmsConfig implements JmsListenerConfigurer {
     registrar.setMessageHandlerMethodFactory(jmsHandlerMethodFactory());
   }
 }
-
-
