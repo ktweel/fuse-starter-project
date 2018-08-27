@@ -29,7 +29,5 @@ Configuration:
       - name: org.galatea.starter
         level: debug
 
-      # Can change log levels for individual loggers as below
-#      - name: org.galatea.starter.utils.Tracer
-#        level: debug
+
         
