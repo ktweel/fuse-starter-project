@@ -11,8 +11,18 @@ public class AlphaVantageReturnMessage {
     private AlphaVantageTimeSeriesDaily priceData;
 
 
-    public String getSymbol() {
-      log.debug("in first get symbol");
-      return metaData.getSymbol();
+    public AlphaVantageMetaData getMetaData() {
+      return metaData;
     }
+    public void setMetaData(AlphaVantageMetaData newMetaData) {
+      metaData = newMetaData;
+    }
+
+  public AlphaVantageTimeSeriesDaily getPriceData() {
+    return priceData;
+  }
+
+  public void setPriceData(AlphaVantageTimeSeriesDaily priceData) {
+    this.priceData = priceData;
+  }
 }

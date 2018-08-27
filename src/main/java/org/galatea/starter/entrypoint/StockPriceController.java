@@ -1,5 +1,6 @@
 package org.galatea.starter.entrypoint;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.galatea.starter.domain.AlphaVantageReturnMessage;
 import org.galatea.starter.service.StockPriceService;
 import org.springframework.web.bind.annotation.RequestMapping;
