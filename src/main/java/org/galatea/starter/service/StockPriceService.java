@@ -4,14 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.domain.AlphaVantageReturnMessage;
 import org.galatea.starter.domain.AlphaVantageTimeSeriesDaily;
@@ -27,7 +21,9 @@ public class StockPriceService {
     ObjectMapper mapper = new ObjectMapper();
     RestTemplate restTemplate = new RestTemplate();
     log.info("calling alpha vantage");
-    AlphaVantageReturnMessage result = restTemplate.getForObject(String.format(uri, symbol, "compact"), AlphaVantageReturnMessage.class);
+    String outputSize;
+    if (days > 100) outputSize = "full"; else outputSize = "compact";
+    AlphaVantageReturnMessage result = restTemplate.getForObject(String.format(uri, symbol, outputSize), AlphaVantageReturnMessage.class);
 
     log.info("alpha vantage called");
 
@@ -47,13 +43,12 @@ public class StockPriceService {
   private static AlphaVantageReturnMessage trimPriceData(AlphaVantageReturnMessage data, int days) {
     AlphaVantageReturnMessage trimmedData = new AlphaVantageReturnMessage();
     trimmedData.setMetaData(data.getMetaData());
-    AlphaVantageTimeSeriesDaily trimmedDaily = new AlphaVantageTimeSeriesDaily();
+//    AlphaVantageTimeSeriesDaily trimmedDaily = new AlphaVantageTimeSeriesDaily();
     List<LocalDate> dates = getListDates(days);
     for (LocalDate d:dates
     ) {
-      trimmedDaily.setTimeSeriesData(d.toString(), data.getPriceData().getTimeSeriesData(d.toString()));
+      trimmedData.setTimeSeriesData(d.toString(), data.getTimeSeriesData(d.toString()));
     }
-    trimmedData.setPriceData(trimmedDaily);
 
     log.info(dates.toString());
     return trimmedData;
@@ -61,8 +56,6 @@ public class StockPriceService {
 
   private static List<LocalDate> getListDates(int days) {
     LocalDate today = LocalDate.now();
-    log.info(today.toString());
-    log.info(today.minusDays(2).toString());
     List<LocalDate> dates = new ArrayList<>();
     int j = 0;
     for (int i = 0; i < days; i++) {
@@ -76,12 +69,6 @@ public class StockPriceService {
       }
     }
     return dates;
-    //Set<LocalDate> dates;
-//    return IntStream.iterate(0, i -> i + 1)
-//        .limit(days)
-//        .mapToObj(i -> today.minusDays(i))
-//        //.filter(localDate -> localDate.getDayOfWeek() != DayOfWeek.SATURDAY && localDate.getDayOfWeek() != DayOfWeek.SUNDAY)
-//        .collect(Collectors.toList());
   }
 
 }
