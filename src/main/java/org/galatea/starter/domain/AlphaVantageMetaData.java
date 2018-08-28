@@ -14,7 +14,4 @@ public class AlphaVantageMetaData {
     @JsonProperty("5. Time Zone")
     private String timeZone;
 
-    public String getSymbol() {
-      return symbol;
-    }
 }

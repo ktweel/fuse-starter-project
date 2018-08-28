@@ -8,10 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.domain.AlphaVantageReturnMessage;
-import org.galatea.starter.domain.AlphaVantageTimeSeriesDaily;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Service which requests data from Alpha Vantage and transforms it to return desired dates
+ */
 @Slf4j
 public class StockPriceService {
 
@@ -37,23 +39,29 @@ public class StockPriceService {
         log.error("unable to convert object to json");
         return "error converting to json: " + e.getMessage();
     }
-
   }
 
+  /**
+   * create new AlphaVantageReturnMessage object that only contains data for desired dates
+   * @param data - original data received from Alpha Vantage
+   * @param days - number of days requested
+   * @return - new data object containing only price data for days requested
+   */
   private static AlphaVantageReturnMessage trimPriceData(AlphaVantageReturnMessage data, int days) {
     AlphaVantageReturnMessage trimmedData = new AlphaVantageReturnMessage();
     trimmedData.setMetaData(data.getMetaData());
-//    AlphaVantageTimeSeriesDaily trimmedDaily = new AlphaVantageTimeSeriesDaily();
     List<LocalDate> dates = getListDates(days);
     for (LocalDate d:dates
     ) {
       trimmedData.setTimeSeriesData(d.toString(), data.getTimeSeriesData(d.toString()));
     }
-
     log.info(dates.toString());
     return trimmedData;
   }
 
+  /**
+   * Generate list of desired dates based on number of days requested
+   */
   private static List<LocalDate> getListDates(int days) {
     LocalDate today = LocalDate.now();
     List<LocalDate> dates = new ArrayList<>();
