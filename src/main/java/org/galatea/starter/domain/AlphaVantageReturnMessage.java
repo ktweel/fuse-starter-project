@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
  * meta data and a map from dates to stock price data
  */
 @Slf4j
+@Data
 public class AlphaVantageReturnMessage {
   @JsonProperty("Meta Data")
   private AlphaVantageMetaData metaData;
