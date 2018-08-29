@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
 import lombok.NonNull;
-import org.springframework.context.annotation.Configuration;
 
 @Entity
 @Data

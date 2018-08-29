@@ -3,7 +3,6 @@ package org.galatea.starter.domain;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import lombok.Data;

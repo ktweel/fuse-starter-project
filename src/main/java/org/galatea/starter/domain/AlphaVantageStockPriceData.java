@@ -3,7 +3,6 @@ package org.galatea.starter.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
 import lombok.Data;
 
 @Data
