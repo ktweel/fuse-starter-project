@@ -12,6 +12,7 @@ import org.galatea.starter.domain.AlphaVantageReturnMessage;
 import org.galatea.starter.domain.StockData;
 import org.galatea.starter.domain.rpsy.StockDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +28,8 @@ public class StockPriceService {
   StockDataRepository repository;
   @Autowired
   ObjectMapper mapper;
-  private final String uri = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&outputsize=%s&apikey=PFPOE75HO1WCKW7H";
+  @Value("${alpha-vantage.uri}")
+  private String uri;
 
 
   public String getPriceData(String symbol, int days) {
