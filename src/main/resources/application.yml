@@ -26,7 +26,8 @@ jms:
    agreement-queue-json: sandbox.agreement
    agreement-queue-proto: sandbox.agreement.proto
 alpha-vantage:
-   uri: "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&outputsize=%s&apikey=PFPOE75HO1WCKW7H"
+   uri: "https://www.alphavantage.co"
+   query: "/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize={symbol}&apikey=PFPOE75HO1WCKW7H"
 ---
 # Test properties go here
 spring:

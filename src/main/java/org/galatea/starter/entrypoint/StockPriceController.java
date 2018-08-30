@@ -1,5 +1,6 @@
 package org.galatea.starter.entrypoint;
 
+import javax.validation.constraints.Min;
 import org.galatea.starter.service.StockPriceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -14,6 +14,7 @@ import org.galatea.starter.domain.rpsy.StockDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,15 +22,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Service which requests data from Alpha Vantage and transforms it to return desired dates
  */
 @Slf4j
-@Component
+@Service
 public class StockPriceService {
 
   @Autowired
   StockDataRepository repository;
   @Autowired
   ObjectMapper mapper;
-  @Value("${alpha-vantage.uri}")
-  private String uri;
+  @Autowired
+  AlphaVantageService alphaVantageService;
 
 
   public String getPriceData(String symbol, int days) {
@@ -46,34 +47,19 @@ public class StockPriceService {
     return json;
   }
 
-  /**
-   * Makes api call to Alpha Vantage to retrieve data not persisted in database
-   * @param symbol stock symbol
-   * @param numDays number of days request is for, used to determine full or compact
-   * @return AlphaVantageReturnMessage containing the data from the Alpha Vantage request
-   */
-  private AlphaVantageReturnMessage alphaVantageCall(String symbol, int numDays) {
-    RestTemplate restTemplate = new RestTemplate();
-    log.info("calling alpha vantage");
-    String outputSize;
-    if (numDays > 100) outputSize = "full"; else outputSize = "compact";
-    AlphaVantageReturnMessage result = restTemplate.getForObject(String.format(uri, symbol, outputSize), AlphaVantageReturnMessage.class);
-
-    log.info("alpha vantage called");
-    return result;
-  }
 
   private String messageToJson(AlphaVantageReturnMessage message) {
-    mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-    mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
+//    mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+//    mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
     try {
       String json = mapper.writeValueAsString(message);
-      log.info("object converted to json");
+      log.info("object converted to json {}", json);
       log.debug(json);
       return json;
     } catch (JsonProcessingException e) {
-      log.error("error converting to json");
-      return String.format("error converting to json: %s", e.getMessage());
+      log.error("error converting to json", e);
+      //TODO: throw exception here
+      return e.getMessage();
     }
   }
 
@@ -87,7 +73,7 @@ public class StockPriceService {
       stockData.setData(message);
     }
     if (repository == null) log.error("null repository");
-    log.info(String.format("Persisting to Database - %s", stockData.toString()));
+    log.info("Persisting to Database - {}", stockData.toString());
     repository.save(stockData);
   }
 
@@ -103,7 +89,7 @@ public class StockPriceService {
   private AlphaVantageReturnMessage databaseCheck(String symbol, int days, List<LocalDate> dates) {
     List<StockData> data = repository.findByStockSymbol(symbol);
     if (data.isEmpty()) {
-      return alphaVantageCall(symbol, days);
+      return alphaVantageService.alphaVantageCall(symbol, days);
     }
     return data.get(0).getData();
   }
@@ -131,7 +117,7 @@ public class StockPriceService {
 
   private void fillData(AlphaVantageReturnMessage compactData, AlphaVantageReturnMessage historicData,
       int days, List<LocalDate> dates) {
-    AlphaVantageReturnMessage fullData = alphaVantageCall(compactData.getMetaData().getSymbol(),
+    AlphaVantageReturnMessage fullData = alphaVantageService.alphaVantageCall(compactData.getMetaData().getSymbol(),
         days);
     for (LocalDate d:dates) {
       log.debug("adding date not in database");
@@ -143,22 +129,21 @@ public class StockPriceService {
 
 
   /**
-   * Generate list of desired dates based on number of days requested
+   * Generate list of desired dates based on number of days requested, excluding weekend dates
+   * TODO: exclude holidays from date list
    */
-  private static List<LocalDate> getListDates(int days) {
+  private List<LocalDate> getListDates(int days) {
     LocalDate today = LocalDate.now();
     List<LocalDate> dates = new ArrayList<>();
     int j = 0;
-    for (int i = 0; i < days; i++) {
+    while (dates.size() < days) {
       LocalDate day = today.minusDays(j);
       if (day.getDayOfWeek() != DayOfWeek.SATURDAY && day.getDayOfWeek() != DayOfWeek.SUNDAY) {
         dates.add(day);
-        j++;
-      } else {
-        i--;
-        j++;
       }
+      j++;
     }
+
     return dates;
   }
 
