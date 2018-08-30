@@ -1,6 +1,7 @@
 package org.galatea.starter.entrypoint;
 
 import org.galatea.starter.service.StockPriceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,10 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class StockPriceController {
 
+  @Autowired
+  StockPriceService service;
+
   @RequestMapping("/price")
   public String getStockPrices(@RequestParam(value="stock") String stock,
       @RequestParam(value="days") int days) {
-    return StockPriceService.getPriceData(stock, days);
+    return service.getPriceData(stock, days);
 
   }
 
