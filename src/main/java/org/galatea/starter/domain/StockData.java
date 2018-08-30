@@ -18,10 +18,12 @@ public class StockData {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
+
   @NonNull
   @Column(name="stockSymbol")
   private String stockSymbol;
-//  @NonNull
+
+  @NonNull
   @Column(name="data")
   @Access(AccessType.PROPERTY)
   private AlphaVantageReturnMessage data;
