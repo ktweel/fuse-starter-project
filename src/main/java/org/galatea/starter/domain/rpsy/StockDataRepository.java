@@ -6,5 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface StockDataRepository extends CrudRepository<StockData, Long> {
 
+  List<StockData> findByStockSymbolAndDateIn(String stockSymbol, List<String> Dates);
+
   List<StockData> findByStockSymbol(String stockSymbol);
 }

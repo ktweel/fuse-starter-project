@@ -8,21 +8,62 @@ import lombok.Data;
 
 @Data
 @Embeddable
-public class AlphaVantageStockPriceData implements Serializable{
+public class AlphaVantageStockPriceData /*implements Serializable*/{
+
+    private String open;
+    private String high;
+    private String low;
+    private String close;
+    private String volume;
 
     @JsonProperty("1. open")
-    private String open;
+    public void setOpen(String open) {
+      this.open = open;
+    }
+
+    @JsonProperty("open")
+    public String getOpen() {
+      return open;
+    }
 
     @JsonProperty("2. high")
-    private String high;
+    public void setHigh(String high) {
+      this.high = high;
+    }
+
+    @JsonProperty("high")
+    public String getHigh() {
+      return high;
+    }
 
     @JsonProperty("3. low")
-    private String low;
+     public void setLow(String low) {
+      this.low = low;
+    }
+
+    @JsonProperty("low")
+    public String getLow() {
+      return low;
+    }
 
     @JsonProperty("4. close")
-    private String close;
+    public void setClose(String close) {
+      this.close = close;
+    }
+
+    @JsonProperty("close")
+    public String getClose() {
+      return close;
+    }
 
     @JsonProperty("5. volume")
-    private String volume;
+    public void setVolume(String volume) {
+      this.volume = volume;
+    }
+
+    @JsonProperty("volume")
+    public String getVolume() {
+      return volume;
+    }
 
 }

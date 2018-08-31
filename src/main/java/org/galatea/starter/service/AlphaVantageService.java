@@ -6,8 +6,11 @@ import feign.Param;
 import feign.RequestLine;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.domain.AlphaVantageReturnMessage;
+import org.galatea.starter.domain.StockDataMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -49,4 +52,6 @@ public class AlphaVantageService {
     log.info("Alpha Vantage call completed in: {}ms", endTime-startTime);
     return alphaVantageReturnMessage;
   }
+
+
 }

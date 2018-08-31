@@ -23,16 +23,25 @@ public class StockData {
   @Column(name="stockSymbol")
   private String stockSymbol;
 
+//  @NonNull
+//  @Column(name="data")
+//  @Access(AccessType.PROPERTY)
+//  private AlphaVantageReturnMessage data;
+
   @NonNull
-  @Column(name="data")
-  @Access(AccessType.PROPERTY)
-  private AlphaVantageReturnMessage data;
+  @Column(name="date")
+  private String date;
+
+  @NonNull
+  @Column(name="priceData")
+  private AlphaVantageStockPriceData priceData;
 
   protected StockData(){}
 
-  public StockData(String symbol, AlphaVantageReturnMessage data) {
+  public StockData(String symbol, String date, AlphaVantageStockPriceData priceData) {
     this.stockSymbol = symbol;
-    this.data = data;
+    this.date = date;
+    this.priceData = priceData;
   }
 
 }

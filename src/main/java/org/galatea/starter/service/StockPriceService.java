@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.domain.AlphaVantageReturnMessage;
 import org.galatea.starter.domain.StockData;
+import org.galatea.starter.domain.StockDataMessage;
 import org.galatea.starter.domain.rpsy.StockDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,24 +34,26 @@ public class StockPriceService {
   AlphaVantageService alphaVantageService;
 
 
-  public String getPriceData(String symbol, int days) {
+  public String getPriceData(String symbol, int days) throws JsonProcessingException{
 
-    List<LocalDate> dates = getListDates(days);
+    List<String> dates = getListDates(days);
 
-    AlphaVantageReturnMessage result = databaseCheck(symbol, days, dates);
+    StockDataMessage result = databaseCheck(symbol, days, dates);
 
-    AlphaVantageReturnMessage trimmedMessage = trimData(result, dates);
+    if (!dates.isEmpty()) {
+      AlphaVantageReturnMessage avMessage = alphaVantageService.alphaVantageCall(symbol, days);
+      convertToStockDataMessage(avMessage, dates, result);
+    }
 
-    String json = messageToJson(trimmedMessage);
-    persistToDatabase(result);
-
+//    AlphaVantageReturnMessage trimmedMessage = trimData(result, dates);
+    log.info("attempting to convert to json: {}", result.toString());
+    String json = messageToJson(result);
+//    persistToDatabase(result);
+    log.info("json converted {}", json);
     return json;
   }
 
-
-  private String messageToJson(AlphaVantageReturnMessage message) {
-//    mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-//    mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
+  private String messageToJson(StockDataMessage message) throws JsonProcessingException{
     try {
       String json = mapper.writeValueAsString(message);
       log.info("object converted to json {}", json);
@@ -58,23 +61,21 @@ public class StockPriceService {
       return json;
     } catch (JsonProcessingException e) {
       log.error("error converting to json", e);
-      //TODO: throw exception here
-      return e.getMessage();
+      throw e;
     }
   }
 
-  private void persistToDatabase(AlphaVantageReturnMessage message) {
-    List<StockData> data = repository.findByStockSymbol(message.getMetaData().getSymbol());
-    StockData stockData;
-    if (data.isEmpty()) {
-      stockData = new StockData(message.getMetaData().getSymbol(), message);
-    } else {
-      stockData = data.get(0);
-      stockData.setData(message);
+  public String dumpDatabase(String symbol) throws JsonProcessingException{
+    List<StockData> stocks = repository.findByStockSymbol(symbol);
+    StockDataMessage message = new StockDataMessage();
+
+    message.setSymbol(symbol);
+    for (StockData d:stocks) {
+      message.setTimeSeriesData(d.getDate(), d.getPriceData());
     }
-    if (repository == null) log.error("null repository");
-    log.info("Persisting to Database - {}", stockData.toString());
-    repository.save(stockData);
+
+    return messageToJson(message);
+
   }
 
   /**
@@ -86,65 +87,53 @@ public class StockPriceService {
    * @param dates
    * @return
    */
-  private AlphaVantageReturnMessage databaseCheck(String symbol, int days, List<LocalDate> dates) {
-    List<StockData> data = repository.findByStockSymbol(symbol);
-    if (data.isEmpty()) {
-      return alphaVantageService.alphaVantageCall(symbol, days);
+  private StockDataMessage databaseCheck(String symbol, int days, List<String> dates) {
+    List<StockData> data = repository.findByStockSymbolAndDateIn(symbol, dates);
+    StockDataMessage message = new StockDataMessage();
+
+    message.setSymbol(symbol);
+    for (StockData d:data) {
+      message.setTimeSeriesData(d.getDate(), d.getPriceData());
+      dates.remove(d.getDate());
     }
-    return data.get(0).getData();
+
+    return message;
   }
-
-  private AlphaVantageReturnMessage trimData(AlphaVantageReturnMessage fullData,
-      List<LocalDate> dates) {
-    AlphaVantageReturnMessage trimmedData = new AlphaVantageReturnMessage();
-    List<LocalDate> remainingDates = new ArrayList<>();
-    trimmedData.setMetaData(fullData.getMetaData());
-
-    for (LocalDate d:dates) {
-      if (fullData.getTimeSeriesData().containsKey(d.toString())) {
-        trimmedData.setTimeSeriesData(d.toString(), fullData.getTimeSeriesData(d.toString()));
-      } else {
-        remainingDates.add(d);
-      }
-    }
-
-    if (!remainingDates.isEmpty()) {
-      fillData(trimmedData, fullData, dates.size(), remainingDates);
-    }
-    log.info(dates.toString());
-    return trimmedData;
-  }
-
-  private void fillData(AlphaVantageReturnMessage compactData, AlphaVantageReturnMessage historicData,
-      int days, List<LocalDate> dates) {
-    AlphaVantageReturnMessage fullData = alphaVantageService.alphaVantageCall(compactData.getMetaData().getSymbol(),
-        days);
-    for (LocalDate d:dates) {
-      log.debug("adding date not in database");
-      compactData.setTimeSeriesData(d.toString(), fullData.getTimeSeriesData(d.toString()));
-      historicData.setTimeSeriesData(d.toString(), fullData.getTimeSeriesData(d.toString()));
-    }
-    log.info(compactData.toString());
-  }
-
 
   /**
    * Generate list of desired dates based on number of days requested, excluding weekend dates
    * TODO: exclude holidays from date list
    */
-  private List<LocalDate> getListDates(int days) {
+  private List<String> getListDates(int days) {
     LocalDate today = LocalDate.now();
-    List<LocalDate> dates = new ArrayList<>();
+    List<String> dates = new ArrayList<>();
     int j = 0;
     while (dates.size() < days) {
       LocalDate day = today.minusDays(j);
       if (day.getDayOfWeek() != DayOfWeek.SATURDAY && day.getDayOfWeek() != DayOfWeek.SUNDAY) {
-        dates.add(day);
+        dates.add(day.toString());
       }
       j++;
     }
 
     return dates;
+  }
+
+  //TODO: consider moving to AlphaVantageService
+
+  /**
+   * Convert AlphaVantageReturn message generated by  api call to StockDataMessage
+   * @param avMessage
+   * @param dates
+   * @param stockDataMessage
+   */
+  public void convertToStockDataMessage(AlphaVantageReturnMessage avMessage, List<String> dates, StockDataMessage stockDataMessage) {
+    stockDataMessage.setSymbol(avMessage.getMetaData().getSymbol());
+    for(String d:dates) {
+      stockDataMessage.setTimeSeriesData(d, avMessage.getTimeSeriesData(d));
+      repository.save(new StockData(stockDataMessage.getSymbol(), d, avMessage.getTimeSeriesData(d)));
+    }
+
   }
 
 }
