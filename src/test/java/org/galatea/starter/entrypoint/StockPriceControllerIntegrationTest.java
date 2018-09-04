@@ -5,8 +5,10 @@ import feign.Param;
 import feign.RequestLine;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.domain.StockDataMessage;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,8 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
-@SpringBootTest (properties = "spring.datasource.url=jdbc:h2:mem:runtests")
-@DataJpaTest
+@SpringBootTest
 public class StockPriceControllerIntegrationTest {
 
   //@Value("${stock-test.url}")
@@ -24,26 +25,70 @@ public class StockPriceControllerIntegrationTest {
 
   @Test
   public void testPrice() {
+    String symbol = "MSFT";
     FuseServer fuseServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
         .target(FuseServer.class, hostName);
 
-    StockDataMessage priceResponse = fuseServer.priceEndpoint("MSFT", 2);
+    StockDataMessage priceResponse = fuseServer.priceEndpoint(symbol, 2);
     log.info(priceResponse.toString());
     assertEquals(2, priceResponse.getTimeSeriesData().size());
   }
 
   @Test
   public void testPriceCallAlphaVantage() {
+    String symbol = "DNKN";
     FuseServer fuseServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
         .target(FuseServer.class, hostName);
 
-    StockDataMessage message = fuseServer.priceEndpointNoDays("MSFT");
+    StockDataMessage message = fuseServer.priceEndpointNoDays(symbol);
     int numDataPoints = message.getTimeSeriesData().size();
 
-    StockDataMessage priceResponse = fuseServer.priceEndpoint("MSFT", numDataPoints + 5);
+    StockDataMessage priceResponse = fuseServer.priceEndpoint(symbol, numDataPoints + 5);
     log.info(priceResponse.toString());
     assertEquals(numDataPoints + 5, priceResponse.getTimeSeriesData().size());
   }
+
+  @Test
+  public void testPriceNoAlphaVantage() {
+    String symbol = "MSFT";
+    FuseServer fuseServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
+        .target(FuseServer.class, hostName);
+
+    StockDataMessage message = fuseServer.priceEndpointNoDays(symbol);
+    int numDataPoints = message.getTimeSeriesData().size();
+    int requestNum;
+    if (numDataPoints > 1) {
+      requestNum = numDataPoints - 1;
+    } else {
+      fuseServer.priceEndpoint(symbol, 10);
+      requestNum = 5;
+    }
+
+    StockDataMessage priceResponse = fuseServer.priceEndpoint(symbol, requestNum);
+    log.info(priceResponse.toString());
+    assertEquals(requestNum, priceResponse.getTimeSeriesData().size());
+  }
+
+
+  @Test
+  public void testPriceDatabaseAndAlphaVantage() {
+    String symbol = "MSFT";
+    FuseServer fuseServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
+        .target(FuseServer.class, hostName);
+
+    StockDataMessage message = fuseServer.priceEndpointNoDays(symbol);
+    int numDataPoints = message.getTimeSeriesData().size();
+
+    if (numDataPoints == 0) {
+      fuseServer.priceEndpoint(symbol, 5);
+      numDataPoints = 5;
+    }
+
+    StockDataMessage priceResponse = fuseServer.priceEndpoint(symbol, numDataPoints + 5);
+    log.info(priceResponse.toString());
+    assertEquals(numDataPoints + 5, priceResponse.getTimeSeriesData().size());
+  }
+
 
   @Test
   public void testInvalidSymbol() {
@@ -80,6 +125,7 @@ public class StockPriceControllerIntegrationTest {
 
     try {
       StockDataMessage priceResponse = fuseServer.priceEndpoint("MSFT", -1);
+      log.info(priceResponse.toString());
       assertTrue(false);
     } catch (Exception e) {
       log.info(e.getMessage());
@@ -102,7 +148,6 @@ public class StockPriceControllerIntegrationTest {
     assertEquals(curr_size + 10, databaseDump.getTimeSeriesData().size());
   }
 
-
   interface FuseServer {
     @RequestLine("GET /price?stock={symbol}&days={days}")
     StockDataMessage priceEndpoint(@Param("symbol") String stock, @Param("days") int days);
@@ -112,5 +157,6 @@ public class StockPriceControllerIntegrationTest {
 
     @RequestLine("GET /price?days={days}")
     StockDataMessage priceEndpointNoSymbol(@Param("days") int days);
-}
+  }
+
 }
