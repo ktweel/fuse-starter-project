@@ -35,6 +35,7 @@ public class StockPriceService {
    */
   public String getPriceData(String symbol, int days) throws JsonProcessingException{
 
+    log.info("Retrieving price data for symbol: {} and {} days", symbol, days);
     List<String> dates = getListDates(days);
 
     StockDataMessage result = databaseService.databaseCheck(symbol, days, dates);
@@ -55,6 +56,7 @@ public class StockPriceService {
    * @throws JsonProcessingException when unable to convert to json
    */
   public String getPriceData(String symbol) throws JsonProcessingException{
+    log.info("Retrieving all database entries for stock symbol: {}", symbol);
     StockDataMessage message = databaseService.dumpDatabase(symbol);
     return messageToJson(message);
   }
@@ -104,7 +106,6 @@ public class StockPriceService {
       if (day.getDayOfWeek() != DayOfWeek.SATURDAY && day.getDayOfWeek() != DayOfWeek.SUNDAY) {
         dates.add(day.toString());
       }
-     // j++;
     }
 
     return dates;

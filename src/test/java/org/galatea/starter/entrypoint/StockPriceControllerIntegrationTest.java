@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.domain.StockDataMessage;
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.Assert.assertEquals;
@@ -23,80 +22,95 @@ public class StockPriceControllerIntegrationTest {
   //@Value("${stock-test.url}")
   private String hostName = "http://localhost:8080";
 
+  /**
+   * Test general functionality
+   */
   @Test
   public void testPrice() {
     String symbol = "MSFT";
-    FuseServer fuseServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-        .target(FuseServer.class, hostName);
+    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
+        .target(StockPriceServer.class, hostName);
 
-    StockDataMessage priceResponse = fuseServer.priceEndpoint(symbol, 2);
+    StockDataMessage priceResponse = stockPriceServer.priceEndpoint(symbol, 2);
     log.info(priceResponse.toString());
     assertEquals(2, priceResponse.getTimeSeriesData().size());
   }
 
+  /**
+   * Test case where alpha vantage api must be called
+   */
   @Test
   public void testPriceCallAlphaVantage() {
     String symbol = "DNKN";
-    FuseServer fuseServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-        .target(FuseServer.class, hostName);
+    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
+        .target(StockPriceServer.class, hostName);
 
-    StockDataMessage message = fuseServer.priceEndpointNoDays(symbol);
+    StockDataMessage message = stockPriceServer.priceEndpointNoDays(symbol);
     int numDataPoints = message.getTimeSeriesData().size();
 
-    StockDataMessage priceResponse = fuseServer.priceEndpoint(symbol, numDataPoints + 5);
+    StockDataMessage priceResponse = stockPriceServer.priceEndpoint(symbol, numDataPoints + 5);
     log.info(priceResponse.toString());
     assertEquals(numDataPoints + 5, priceResponse.getTimeSeriesData().size());
   }
 
+  /**
+   * Test case where data is retrieved solely from database, if database is empty, initial
+   * call made to populate database before test call is made
+   */
   @Test
   public void testPriceNoAlphaVantage() {
     String symbol = "MSFT";
-    FuseServer fuseServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-        .target(FuseServer.class, hostName);
+    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
+        .target(StockPriceServer.class, hostName);
 
-    StockDataMessage message = fuseServer.priceEndpointNoDays(symbol);
+    StockDataMessage message = stockPriceServer.priceEndpointNoDays(symbol);
     int numDataPoints = message.getTimeSeriesData().size();
     int requestNum;
     if (numDataPoints > 1) {
       requestNum = numDataPoints - 1;
     } else {
-      fuseServer.priceEndpoint(symbol, 10);
+      stockPriceServer.priceEndpoint(symbol, 10);
       requestNum = 5;
     }
 
-    StockDataMessage priceResponse = fuseServer.priceEndpoint(symbol, requestNum);
+    StockDataMessage priceResponse = stockPriceServer.priceEndpoint(symbol, requestNum);
     log.info(priceResponse.toString());
     assertEquals(requestNum, priceResponse.getTimeSeriesData().size());
   }
 
-
+  /**
+   * test case where some data is retrieved from database and some data retrieved
+   * from alpha vantage api call
+   */
   @Test
   public void testPriceDatabaseAndAlphaVantage() {
     String symbol = "MSFT";
-    FuseServer fuseServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-        .target(FuseServer.class, hostName);
+    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
+        .target(StockPriceServer.class, hostName);
 
-    StockDataMessage message = fuseServer.priceEndpointNoDays(symbol);
+    StockDataMessage message = stockPriceServer.priceEndpointNoDays(symbol);
     int numDataPoints = message.getTimeSeriesData().size();
 
     if (numDataPoints == 0) {
-      fuseServer.priceEndpoint(symbol, 5);
+      stockPriceServer.priceEndpoint(symbol, 5);
       numDataPoints = 5;
     }
 
-    StockDataMessage priceResponse = fuseServer.priceEndpoint(symbol, numDataPoints + 5);
+    StockDataMessage priceResponse = stockPriceServer.priceEndpoint(symbol, numDataPoints + 5);
     log.info(priceResponse.toString());
     assertEquals(numDataPoints + 5, priceResponse.getTimeSeriesData().size());
   }
 
-
+  /**
+   * Test case with invalid stock symbol
+   */
   @Test
   public void testInvalidSymbol() {
-    FuseServer fuseServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-        .target(FuseServer.class, hostName);
+    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
+        .target(StockPriceServer.class, hostName);
 
     try {
-      StockDataMessage priceResponse = fuseServer.priceEndpoint("MSFTAAAA", 2);
+      stockPriceServer.priceEndpoint("MSFTAAAA", 2);
       assertTrue(false);
     } catch (Exception e) {
       log.info(e.getMessage());
@@ -104,13 +118,16 @@ public class StockPriceControllerIntegrationTest {
     }
   }
 
+  /**
+   * Test case with no symbol given
+   */
   @Test
   public void testNoSymbol() {
-    FuseServer fuseServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-        .target(FuseServer.class, hostName);
+    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
+        .target(StockPriceServer.class, hostName);
 
     try {
-      StockDataMessage priceResponse = fuseServer.priceEndpointNoSymbol(2);
+      stockPriceServer.priceEndpointNoSymbol(2);
       assertTrue(false);
     } catch (Exception e) {
       log.info(e.getMessage());
@@ -118,13 +135,16 @@ public class StockPriceControllerIntegrationTest {
     }
   }
 
+  /**
+   * test case where negative number of days given
+   */
   @Test
   public void testInvalidDays() {
-    FuseServer fuseServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-        .target(FuseServer.class, hostName);
+    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
+        .target(StockPriceServer.class, hostName);
 
     try {
-      StockDataMessage priceResponse = fuseServer.priceEndpoint("MSFT", -1);
+      StockDataMessage priceResponse = stockPriceServer.priceEndpoint("MSFT", -1);
       log.info(priceResponse.toString());
       assertTrue(false);
     } catch (Exception e) {
@@ -133,22 +153,44 @@ public class StockPriceControllerIntegrationTest {
     }
   }
 
+  /**
+   * test alpha vantage full data call
+   */
+  @Test
+  public void testAlphaVantageFull() {
+    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
+        .target(StockPriceServer.class, hostName);
+
+    String symbol = "FB";
+    StockDataMessage message = stockPriceServer.priceEndpointNoDays(symbol);
+    int numDataPoints = message.getTimeSeriesData().size();
+    int plusValue = numDataPoints + 101;
+
+    StockDataMessage priceResponse = stockPriceServer.priceEndpoint(symbol, plusValue);
+    log.info(priceResponse.toString());
+    assertEquals(plusValue, priceResponse.getTimeSeriesData().size());
+
+  }
+
+  /**
+   * Test database dump path where no days given and contents of database retrieved
+   */
   @Test
   public void testStockDump() {
 
-    FuseServer fuseServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-        .target(FuseServer.class, hostName);
-    StockDataMessage message = fuseServer.priceEndpointNoDays("MSFT");
+    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
+        .target(StockPriceServer.class, hostName);
+    StockDataMessage message = stockPriceServer.priceEndpointNoDays("MSFT");
     int curr_size = message.getTimeSeriesData().size();
-    fuseServer.priceEndpoint("MSFT", curr_size + 10);
-    fuseServer.priceEndpoint("AAPL", 3);
-    fuseServer.priceEndpoint("MSFT", 10);
+    stockPriceServer.priceEndpoint("MSFT", curr_size + 10);
+    stockPriceServer.priceEndpoint("AAPL", 3);
+    stockPriceServer.priceEndpoint("MSFT", 8);
 
-    StockDataMessage databaseDump = fuseServer.priceEndpointNoDays("MSFT");
+    StockDataMessage databaseDump = stockPriceServer.priceEndpointNoDays("MSFT");
     assertEquals(curr_size + 10, databaseDump.getTimeSeriesData().size());
   }
 
-  interface FuseServer {
+  interface StockPriceServer {
     @RequestLine("GET /price?stock={symbol}&days={days}")
     StockDataMessage priceEndpoint(@Param("symbol") String stock, @Param("days") int days);
 
@@ -157,6 +199,11 @@ public class StockPriceControllerIntegrationTest {
 
     @RequestLine("GET /price?days={days}")
     StockDataMessage priceEndpointNoSymbol(@Param("days") int days);
+  }
+
+  @After
+  public void pauseAfterTest() throws InterruptedException {
+    TimeUnit.SECONDS.sleep(1);
   }
 
 }
