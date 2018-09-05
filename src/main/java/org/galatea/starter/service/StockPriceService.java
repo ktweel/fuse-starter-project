@@ -1,16 +1,16 @@
 package org.galatea.starter.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.domain.AlphaVantageReturnMessage;
 import org.galatea.starter.domain.StockDataMessage;
 import org.springframework.stereotype.Service;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Service which requests data from Alpha Vantage and transforms it to return desired dates
@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class StockPriceService {
 
   private final DatabaseService databaseService;
-  private final ObjectMapper mapper;
   private final AlphaVantageService alphaVantageService;
 
 
@@ -31,21 +30,23 @@ public class StockPriceService {
    * @param symbol stock symbol for which data should be returned
    * @param days number of days for which data should be returned
    * @return string representing json for stock price data
-   * @throws JsonProcessingException when error occurs converting to json
    */
-  public String getPriceData(String symbol, int days) throws JsonProcessingException{
+  public StockDataMessage getPriceData(String symbol, int days) {
 
     log.info("Retrieving price data for symbol: {} and {} days", symbol, days);
     List<String> dates = getListDates(days);
 
     StockDataMessage result = databaseService.databaseCheck(symbol, days, dates);
 
+    List<String> remainingDates = getRemainingDates(result, dates);
+
     if (!dates.isEmpty()) {
-      AlphaVantageReturnMessage avMessage = alphaVantageService.alphaVantageCall(symbol, days, result, dates);
-      convertToStockDataMessage(avMessage, dates, result);
+      AlphaVantageReturnMessage avMessage = alphaVantageService.alphaVantageCall(symbol, days, result, remainingDates);
+      convertToStockDataMessage(avMessage, remainingDates, result);
+      saveToDatabase(remainingDates, result);
     }
 
-    return messageToJson(result);
+    return result;
   }
 
   /**
@@ -53,29 +54,10 @@ public class StockPriceService {
    * stored database values for that stock
    * @param symbol stock symbol for which data should be returned
    * @return string representing json for stock price data
-   * @throws JsonProcessingException when unable to convert to json
    */
-  public String getPriceData(String symbol) throws JsonProcessingException{
+  public StockDataMessage getPriceData(String symbol) {
     log.info("Retrieving all database entries for stock symbol: {}", symbol);
-    StockDataMessage message = databaseService.dumpDatabase(symbol);
-    return messageToJson(message);
-  }
-
-  /**
-   * converts StockDataMessage to a json string
-   * @param message StockData message to be converted to json
-   * @return string representing json version of message
-   * @throws JsonProcessingException when error converting to json
-   */
-  private String messageToJson(StockDataMessage message) throws JsonProcessingException{
-    try {
-      String json = mapper.writeValueAsString(message);
-      log.info("object converted to json {}", json);
-      return json;
-    } catch (JsonProcessingException e) {
-      log.error("error converting to json", e);
-      throw e;
-    }
+    return databaseService.dumpDatabase(symbol);
   }
 
   /**
@@ -87,10 +69,39 @@ public class StockPriceService {
    */
   private void convertToStockDataMessage(AlphaVantageReturnMessage avMessage, List<String> dates, StockDataMessage stockDataMessage) {
     stockDataMessage.setSymbol(avMessage.getMetaData().getSymbol());
-    for(String d:dates) {
+    for (String d:dates) {
       stockDataMessage.setTimeSeriesData(d, avMessage.getTimeSeriesData(d));
-      databaseService.save(stockDataMessage.getSymbol(), d, avMessage.getTimeSeriesData(d));
     }
+  }
+
+  /**
+   * Save data given dates from stockDataMessage to database
+   * @param dates list of relevant dates to be saved
+   * @param stockDataMessage contains price data
+   */
+  private void saveToDatabase(List<String> dates, StockDataMessage stockDataMessage) {
+    for (String d:dates) {
+      databaseService.save(stockDataMessage.getSymbol(), d, stockDataMessage.getTimeSeriesData(d));
+    }
+  }
+
+  /**
+   * Given a list of dates and a stock data message returns list of dates contained in original
+   * list but not stored in stockData Message
+   * @param stockDataMessage data to be checked against
+   * @param dates list of dates to see check
+   * @return list of dates checked for which data was not stored in stockDataMessage
+   */
+  private List<String> getRemainingDates(StockDataMessage stockDataMessage, List<String> dates) {
+    List<String> remainingDates = new ArrayList<>();
+
+    for (String d:dates) {
+      if (!stockDataMessage.getTimeSeriesData().containsKey(d)) {
+        remainingDates.add(d);
+      }
+    }
+
+    return remainingDates;
   }
 
   /**

@@ -33,12 +33,4 @@ public class AlphaVantageReturnMessage {
     return timeSeriesData.get(date);
   }
 
-  public AlphaVantageMetaData getMetaData() {
-    return metaData;
-  }
-
-  public void setMetaData(AlphaVantageMetaData newMetaData) {
-    metaData = newMetaData;
-  }
-
 }

@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 public class AlphaVantageService {
 
   private final AlphaVantageServer alphaVantageServer;
+  // number of datapoints returned when compact alpha vantage call is made
+  private final int compactDataLimit = 100;
 
   /**
    * Makes api call to Alpha Vantage to retrieve data not persisted in database
@@ -26,7 +28,7 @@ public class AlphaVantageService {
     log.info("Calling Alpha Vantage for symbol: {} and numDays: {}", symbol, numDays);
     long startTime = System.currentTimeMillis();
     AlphaVantageReturnMessage alphaVantageReturnMessage = alphaVantageServer
-        .alphaVantageApiCall(symbol, (numDays > 100) ? "full" : "compact");
+        .alphaVantageApiCall(symbol, (numDays > compactDataLimit) ? "full" : "compact");
     long endTime = System.currentTimeMillis();
     log.info("Alpha Vantage call completed in: {}ms", endTime-startTime);
     return alphaVantageReturnMessage;

@@ -1,5 +1,7 @@
 package org.galatea.starter.entrypoint;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Feign;
 import feign.Param;
 import feign.RequestLine;
@@ -8,8 +10,11 @@ import feign.jackson.JacksonEncoder;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.domain.StockDataMessage;
+import org.galatea.starter.domain.rpsy.StockDataRepository;
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.Assert.assertEquals;
@@ -19,8 +24,12 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest
 public class StockPriceControllerIntegrationTest {
 
-  //@Value("${stock-test.url}")
+//  @Value("${stock-test.url}")
+//  private String hostName;
   private String hostName = "http://localhost:8080";
+
+  @Autowired
+  StockDataRepository repository;
 
   /**
    * Test general functionality
@@ -40,7 +49,7 @@ public class StockPriceControllerIntegrationTest {
    * Test case where alpha vantage api must be called
    */
   @Test
-  public void testPriceCallAlphaVantage() {
+  public void testPriceCallAlphaVantage() throws JsonProcessingException {
     String symbol = "DNKN";
     StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
         .target(StockPriceServer.class, hostName);
@@ -164,7 +173,7 @@ public class StockPriceControllerIntegrationTest {
     String symbol = "FB";
     StockDataMessage message = stockPriceServer.priceEndpointNoDays(symbol);
     int numDataPoints = message.getTimeSeriesData().size();
-    int plusValue = numDataPoints + 101;
+    int plusValue = numDataPoints + ((numDataPoints > 100) ? 5 : 101);
 
     StockDataMessage priceResponse = stockPriceServer.priceEndpoint(symbol, plusValue);
     log.info(priceResponse.toString());
@@ -204,6 +213,6 @@ public class StockPriceControllerIntegrationTest {
   @After
   public void pauseAfterTest() throws InterruptedException {
     TimeUnit.SECONDS.sleep(1);
-  }
+}
 
 }

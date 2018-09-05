@@ -20,7 +20,6 @@ public class AppConfig {
   @Bean
   ObjectMapper objectMapper() {
     ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
     mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
     return mapper;
   }

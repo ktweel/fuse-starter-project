@@ -2,7 +2,7 @@ package org.galatea.starter.entrypoint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
-import org.galatea.starter.entrypoint.exception.NegativeValueException;
+import org.galatea.starter.entrypoint.exception.NonPositiveValueException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +46,7 @@ public class RestExceptionHandler {
   protected ResponseEntity<Object> handleJsonProcessingException(
       final JsonProcessingException exception) {
     log.debug("Error converting to JSON", exception);
-    ApiError error = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+    ApiError error = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, exception.toString());
     return buildResponseEntity(error);
   }
 
@@ -54,15 +54,15 @@ public class RestExceptionHandler {
   protected ResponseEntity<Object> handleMissingServletRequestParameterException(
       final MissingServletRequestParameterException exception) {
     log.error("Missing required parameter", exception);
-    ApiError error = new ApiError(HttpStatus.BAD_REQUEST, exception.getMessage());
+    ApiError error = new ApiError(HttpStatus.BAD_REQUEST, exception.toString());
     return buildResponseEntity(error);
   }
 
-  @ExceptionHandler(NegativeValueException.class)
-  protected ResponseEntity<Object> handleNegativeValueException (
-      final NegativeValueException exception) {
+  @ExceptionHandler(NonPositiveValueException.class)
+  protected ResponseEntity<Object> handleNonPositiveValueException (
+      final NonPositiveValueException exception) {
     log.error("negative or zero value given for days parameter", exception);
-    ApiError error = new ApiError(HttpStatus.BAD_REQUEST, exception.getMessage());
+    ApiError error = new ApiError(HttpStatus.BAD_REQUEST, exception.toString());
     return buildResponseEntity(error);
   }
 

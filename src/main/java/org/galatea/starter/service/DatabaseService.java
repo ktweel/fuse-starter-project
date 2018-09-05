@@ -1,6 +1,9 @@
 package org.galatea.starter.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.domain.AlphaVantageStockPriceData;
@@ -44,11 +47,11 @@ public class DatabaseService {
   public StockDataMessage databaseCheck(String symbol, int days, List<String> dates) {
     List<StockData> data = repository.findByStockSymbolAndDateIn(symbol, dates);
     StockDataMessage message = new StockDataMessage();
+    List<String> foundDates = new ArrayList<>();
 
     message.setSymbol(symbol);
     for (StockData d : data) {
       message.setTimeSeriesData(d.getDate(), d.getPriceData());
-      dates.remove(d.getDate());
     }
 
     return message;
