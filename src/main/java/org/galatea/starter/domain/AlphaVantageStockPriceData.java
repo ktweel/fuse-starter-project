@@ -1,14 +1,12 @@
 package org.galatea.starter.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import java.io.Serializable;
 import javax.persistence.Embeddable;
 import lombok.Data;
 
 @Data
 @Embeddable
-public class AlphaVantageStockPriceData /*implements Serializable*/{
+public class AlphaVantageStockPriceData {
 
     private String open;
     private String high;

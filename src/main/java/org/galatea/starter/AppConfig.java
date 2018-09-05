@@ -26,7 +26,7 @@ public class AppConfig {
   }
 
   @Bean
-  AlphaVantageServer fuseServer() {
+  AlphaVantageServer alphaVantageServer() {
     return Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
         .target(AlphaVantageServer.class, uri);
   }
