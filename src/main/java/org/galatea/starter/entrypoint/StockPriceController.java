@@ -25,7 +25,7 @@ public class StockPriceController {
 
   @RequestMapping(value = "/price", produces = "application/json")
   public StockDataMessage getStockPrices(@RequestParam(value="stock") String stock,
-       @Min(0) @RequestParam(value="days", required=false) Integer days) throws JsonProcessingException{
+       @Min(0) @RequestParam(value="days", required=false) Integer days) {
     if (days == null) {
       return service.getPriceData(stock.toUpperCase());
     } else {
