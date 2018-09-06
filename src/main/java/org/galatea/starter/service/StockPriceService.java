@@ -34,7 +34,7 @@ public class StockPriceService {
     log.info("Retrieving price data for symbol: {} and {} days", symbol, days);
     List<String> dates = getListDates(days);
 
-    StockDataMessage result = databaseService.databaseCheck(symbol, days, dates);
+    StockDataMessage result = databaseService.databaseCheck(symbol, dates);
 
     List<String> remainingDates = getRemainingDates(result, dates);
 
