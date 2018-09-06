@@ -4,23 +4,14 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
 import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
-
-/**
- * Class representing the structure of data received from Alpha Vantage, contains
- * meta data and a map from dates to stock price data
- */
-@Slf4j
 @Data
-@Embeddable
-public class AlphaVantageReturnMessage {
-  @JsonProperty("Meta Data")
-  private AlphaVantageMetaData metaData;
+public class StockDataMessage {
+  @JsonProperty("symbol")
+  private String symbol;
 
-  @JsonProperty("Time Series (Daily)")
+  @JsonProperty("timeSeriesData")
   @ElementCollection
   private HashMap<String, AlphaVantageStockPriceData> timeSeriesData = new HashMap<>();
 

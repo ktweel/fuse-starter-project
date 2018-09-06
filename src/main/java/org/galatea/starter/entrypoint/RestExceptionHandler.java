@@ -1,11 +1,13 @@
 package org.galatea.starter.entrypoint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import javax.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -44,9 +46,27 @@ public class RestExceptionHandler {
   protected ResponseEntity<Object> handleJsonProcessingException(
       final JsonProcessingException exception) {
     log.debug("Error converting to JSON", exception);
-    ApiError error = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+    ApiError error = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, exception.toString());
     return buildResponseEntity(error);
   }
+
+  @ExceptionHandler(MissingServletRequestParameterException.class)
+  protected ResponseEntity<Object> handleMissingServletRequestParameterException(
+      final MissingServletRequestParameterException exception) {
+    log.error("Missing required parameter", exception);
+    ApiError error = new ApiError(HttpStatus.BAD_REQUEST, exception.toString());
+    return buildResponseEntity(error);
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  protected ResponseEntity<Object> handleConstraintViolationException (
+      final ConstraintViolationException exception) {
+    log.error("constraint violation exception: ", exception);
+    ApiError error = new ApiError(HttpStatus.BAD_REQUEST, exception.toString());
+    return buildResponseEntity(error);
+  }
+
+
 
 
   private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {

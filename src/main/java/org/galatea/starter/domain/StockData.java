@@ -1,7 +1,5 @@
 package org.galatea.starter.domain;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,15 +22,19 @@ public class StockData {
   private String stockSymbol;
 
   @NonNull
-  @Column(name="data")
-  @Access(AccessType.PROPERTY)
-  private AlphaVantageReturnMessage data;
+  @Column(name="date")
+  private String date;
+
+  @NonNull
+  @Column(name="priceData")
+  private AlphaVantageStockPriceData priceData;
 
   protected StockData(){}
 
-  public StockData(String symbol, AlphaVantageReturnMessage data) {
+  public StockData(String symbol, String date, AlphaVantageStockPriceData priceData) {
     this.stockSymbol = symbol;
-    this.data = data;
+    this.date = date;
+    this.priceData = priceData;
   }
 
 }
