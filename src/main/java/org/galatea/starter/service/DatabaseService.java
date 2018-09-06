@@ -41,8 +41,7 @@ public class DatabaseService {
 
   /**
    * Checks the database for price data for the given stock symbol and list of dates, returns a
-   * StockDataMessage containing any price data in the database, removes any dates for which data
-   * was found from the list of dates given
+   * StockDataMessage containing any price data in the database
    */
   public StockDataMessage databaseCheck(String symbol, int days, List<String> dates) {
     List<StockData> data = repository.findByStockSymbolAndDateIn(symbol, dates);
