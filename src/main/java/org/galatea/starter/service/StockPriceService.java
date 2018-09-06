@@ -4,8 +4,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.domain.AlphaVantageReturnMessage;
@@ -70,7 +68,7 @@ public class StockPriceService {
   private void convertToStockDataMessage(AlphaVantageReturnMessage avMessage, List<String> dates, StockDataMessage stockDataMessage) {
     stockDataMessage.setSymbol(avMessage.getMetaData().getSymbol());
     for (String d:dates) {
-      stockDataMessage.setTimeSeriesData(d, avMessage.getTimeSeriesData(d));
+      stockDataMessage.setTimeSeriesData(d, avMessage.getTimeSeriesPriceData(d));
     }
   }
 
