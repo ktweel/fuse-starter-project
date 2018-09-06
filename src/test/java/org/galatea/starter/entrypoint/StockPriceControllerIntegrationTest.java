@@ -158,7 +158,7 @@ public class StockPriceControllerIntegrationTest {
       assertTrue(false);
     } catch (Exception e) {
       log.info(e.getMessage());
-      assertTrue(e.getMessage().contains("Invalid days value given"));
+      assertTrue(e.getMessage().contains("must be greater than or equal to 0"));
     }
   }
 

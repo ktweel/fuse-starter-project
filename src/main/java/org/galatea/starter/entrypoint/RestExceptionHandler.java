@@ -1,6 +1,7 @@
 package org.galatea.starter.entrypoint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import javax.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.entrypoint.exception.NonPositiveValueException;
 import org.springframework.dao.DataAccessException;
@@ -62,6 +63,14 @@ public class RestExceptionHandler {
   protected ResponseEntity<Object> handleNonPositiveValueException (
       final NonPositiveValueException exception) {
     log.error("negative or zero value given for days parameter", exception);
+    ApiError error = new ApiError(HttpStatus.BAD_REQUEST, exception.toString());
+    return buildResponseEntity(error);
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  protected ResponseEntity<Object> handleConstraintViolationException (
+      final ConstraintViolationException exception) {
+    log.error("constraint violation exception: ", exception);
     ApiError error = new ApiError(HttpStatus.BAD_REQUEST, exception.toString());
     return buildResponseEntity(error);
   }
