@@ -50,7 +50,7 @@ public class StockPriceService {
   }
 
   /**
-   * Given a stock symbol, returns json continaing stock price data for all
+   * Given a stock symbol, returns json containing stock price data for all
    * stored database values for that stock
    * @param symbol stock symbol for which data should be returned
    * @return string representing json for stock price data
