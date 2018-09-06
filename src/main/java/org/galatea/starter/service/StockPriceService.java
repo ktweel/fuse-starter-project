@@ -41,7 +41,7 @@ public class StockPriceService {
     List<String> remainingDates = getRemainingDates(result, dates);
 
     if (!dates.isEmpty()) {
-      AlphaVantageReturnMessage avMessage = alphaVantageService.alphaVantageCall(symbol, days, result, remainingDates);
+      AlphaVantageReturnMessage avMessage = alphaVantageService.alphaVantageCall(symbol, days);
       convertToStockDataMessage(avMessage, remainingDates, result);
       saveToDatabase(remainingDates, result);
     }

@@ -24,7 +24,7 @@ public class AlphaVantageService {
    * @param numDays number of days request is for, used to determine full or compact
    * @return AlphaVantageReturnMessage containing the data from the Alpha Vantage request
    */
-  public AlphaVantageReturnMessage alphaVantageCall(String symbol, int numDays, StockDataMessage stockDataMessage, List<String> dates) {
+  public AlphaVantageReturnMessage alphaVantageCall(String symbol, int numDays) {
     log.info("Calling Alpha Vantage for symbol: {} and numDays: {}", symbol, numDays);
     long startTime = System.currentTimeMillis();
     AlphaVantageReturnMessage alphaVantageReturnMessage = alphaVantageServer
