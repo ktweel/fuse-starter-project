@@ -29,7 +29,7 @@ public class AlphaVantageReturnMessage {
     timeSeriesData.put(date, priceData);
   }
 
-  public AlphaVantageStockPriceData getTimeSeriesPriceData(String date) {
+  public AlphaVantageStockPriceData getTimeSeriesData(String date) {
     return timeSeriesData.get(date);
   }
 

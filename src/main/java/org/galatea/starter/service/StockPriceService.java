@@ -68,7 +68,7 @@ public class StockPriceService {
   private void convertToStockDataMessage(AlphaVantageReturnMessage avMessage, List<String> dates, StockDataMessage stockDataMessage) {
     stockDataMessage.setSymbol(avMessage.getMetaData().getSymbol());
     for (String d:dates) {
-      stockDataMessage.setTimeSeriesData(d, avMessage.getTimeSeriesPriceData(d));
+      stockDataMessage.setTimeSeriesData(d, avMessage.getTimeSeriesData(d));
     }
   }
 

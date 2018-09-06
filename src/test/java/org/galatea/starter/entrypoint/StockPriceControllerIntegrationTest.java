@@ -1,7 +1,6 @@
 package org.galatea.starter.entrypoint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Feign;
 import feign.Param;
 import feign.RequestLine;
@@ -14,7 +13,6 @@ import org.galatea.starter.domain.rpsy.StockDataRepository;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.Assert.assertEquals;
