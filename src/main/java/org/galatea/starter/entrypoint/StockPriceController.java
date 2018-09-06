@@ -9,7 +9,6 @@ import org.galatea.starter.service.StockPriceService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -25,7 +24,6 @@ public class StockPriceController {
   private final StockPriceService service;
 
   @RequestMapping(value = "/price", produces = "application/json")
-  @ResponseBody
   public StockDataMessage getStockPrices(@RequestParam(value="stock") String stock,
        @Min(0) @RequestParam(value="days", required=false) Integer days) throws JsonProcessingException{
     if (days == null) {
