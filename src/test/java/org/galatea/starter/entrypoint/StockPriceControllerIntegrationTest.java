@@ -13,6 +13,7 @@ import org.galatea.starter.domain.rpsy.StockDataRepository;
 import org.galatea.starter.service.StockPriceService;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -222,7 +223,7 @@ public class StockPriceControllerIntegrationTest {
     StockDataMessage priceEndpointNoSymbol(@Param("days") int days);
   }
 
-  @Before
+  @BeforeClass
   public void setUpServer() {
     stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
         .target(StockPriceServer.class, hostName);
