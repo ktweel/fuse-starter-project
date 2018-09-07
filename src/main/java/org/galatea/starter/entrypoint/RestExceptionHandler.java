@@ -59,10 +59,17 @@ public class RestExceptionHandler {
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
-  protected ResponseEntity<Object> handleConstraintViolationException (
+  protected ResponseEntity<Object> handleConstraintViolationException(
       final ConstraintViolationException exception) {
     log.error("constraint violation exception: ", exception);
     ApiError error = new ApiError(HttpStatus.BAD_REQUEST, exception.toString());
+    return buildResponseEntity(error);
+  }
+
+  @ExceptionHandler(RuntimeException.class)
+  protected ResponseEntity<Object> handleRuntimeException(final RuntimeException exception) {
+    log.error("Runtime exception: ", exception);
+    ApiError error = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, exception.toString());
     return buildResponseEntity(error);
   }
 

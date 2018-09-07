@@ -24,8 +24,8 @@ public class StockPriceController {
   private final StockPriceService service;
 
   @RequestMapping(value = "/price", produces = "application/json")
-  public StockDataMessage getStockPrices(@RequestParam(value="stock") String stock,
-       @Min(0) @RequestParam(value="days", required=false) Integer days) {
+  public StockDataMessage getStockPrices(@RequestParam(value = "stock") String stock,
+       @Min(0) @RequestParam(value = "days", required = false) Integer days) {
     if (days == null) {
       return service.getPriceData(stock.toUpperCase());
     } else {

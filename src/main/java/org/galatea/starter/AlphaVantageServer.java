@@ -9,5 +9,6 @@ public interface AlphaVantageServer {
   //TODO: put query string in application.yml
 
   @RequestLine("GET /query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize={size}&apikey=PFPOE75HO1WCKW7H")
-  AlphaVantageReturnMessage alphaVantageApiCall(@Param("symbol") String symbol, @Param("size") String outputSize);
+  AlphaVantageReturnMessage alphaVantageApiCall(@Param("symbol") String symbol,
+      @Param("size") String outputSize);
 }
