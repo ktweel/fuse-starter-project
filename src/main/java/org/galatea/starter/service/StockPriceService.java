@@ -24,7 +24,7 @@ public class StockPriceService {
 
   /**
    * Given a stock symbol and number of days, returns json containing stock price data for
-   * the past n number of days for the given stock
+   * the past n number of days for the given stock.
    * @param symbol stock symbol for which data should be returned
    * @param days number of days for which data should be returned
    * @return string representing json for stock price data
@@ -49,7 +49,7 @@ public class StockPriceService {
 
   /**
    * Given a stock symbol, returns json containing stock price data for all
-   * stored database values for that stock
+   * stored database values for that stock.
    * @param symbol stock symbol for which data should be returned
    * @return string representing json for stock price data
    */
@@ -65,7 +65,8 @@ public class StockPriceService {
    * @param stockDataMessage stockDataMessage possibly containing data, to which stock
    *        price data for relevant dates is added
    */
-  private void convertToStockDataMessage(AlphaVantageReturnMessage avMessage, List<String> dates, StockDataMessage stockDataMessage) {
+  private void convertToStockDataMessage(AlphaVantageReturnMessage avMessage, List<String> dates,
+      StockDataMessage stockDataMessage) {
     stockDataMessage.setSymbol(avMessage.getMetaData().getSymbol());
     for (String d:dates) {
       stockDataMessage.setTimeSeriesData(d, avMessage.getTimeSeriesData(d));
@@ -109,9 +110,10 @@ public class StockPriceService {
   private List<String> getListDates(int days) {
     LocalDate today = LocalDate.now();
     List<String> dates = new ArrayList<>();
-    int j = 0;
+    int i = 0;
     while (dates.size() < days) {
-      LocalDate day = today.minusDays(j++);
+      //increment i regardless of whether date added to list or not
+      LocalDate day = today.minusDays(i++);
       if (day.getDayOfWeek() != DayOfWeek.SATURDAY && day.getDayOfWeek() != DayOfWeek.SUNDAY) {
         dates.add(day.toString());
       }

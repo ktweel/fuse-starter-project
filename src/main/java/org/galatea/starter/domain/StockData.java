@@ -1,32 +1,25 @@
 package org.galatea.starter.domain;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import lombok.Data;
 import lombok.NonNull;
 
-//@Entity
 @Data
-//@Table(name="stock")
 public class StockData {
   @Id
-//  @GeneratedValue(strategy = GenerationType.AUTO)
   private String id;
 
   @NonNull
-  @Column(name="stockSymbol")
+  @Column(name = "stockSymbol")
   private String stockSymbol;
 
   @NonNull
-  @Column(name="date")
+  @Column(name = "date")
   private String date;
 
   @NonNull
-  @Column(name="priceData")
+  @Column(name = "priceData")
   private AlphaVantageStockPriceData priceData;
 
   protected StockData(){}

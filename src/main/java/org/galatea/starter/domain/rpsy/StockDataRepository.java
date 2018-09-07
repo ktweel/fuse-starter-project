@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface StockDataRepository extends MongoRepository<StockData, String> {
 
-  List<StockData> findByStockSymbolAndDateIn(String stockSymbol, List<String> Dates);
+  List<StockData> findByStockSymbolAndDateIn(String stockSymbol, List<String> dates);
 
   List<StockData> findByStockSymbol(String stockSymbol);
 }
