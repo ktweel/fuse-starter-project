@@ -2,16 +2,16 @@ package org.galatea.starter.domain;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.HashMap;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
 
 /**
  * Class representing the structure of data received from Alpha Vantage, contains
- * meta data and a map from dates to stock price data
+ * meta data and a map from dates to stock price data.
  */
 @Slf4j
 @Data

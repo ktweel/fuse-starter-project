@@ -17,7 +17,7 @@ public class AlphaVantageService {
   private static final int COMPACT_DATA_LIMIT = 100;
 
   /**
-   * Makes api call to Alpha Vantage to retrieve data not persisted in database
+   * Makes api call to Alpha Vantage to retrieve data not persisted in database.
    * @param symbol stock symbol
    * @param numDays number of days request is for, used to determine full or compact
    * @return AlphaVantageReturnMessage containing the data from the Alpha Vantage request

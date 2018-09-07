@@ -1,8 +1,11 @@
 package org.galatea.starter.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.persistence.Embeddable;
 import lombok.Data;
+
+import javax.persistence.Embeddable;
+
+
 
 @Data
 @Embeddable
