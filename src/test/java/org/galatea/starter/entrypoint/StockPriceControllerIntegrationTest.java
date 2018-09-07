@@ -36,12 +36,12 @@ public class StockPriceControllerIntegrationTest {
 
 //  @Value("${stock-test.url}")
 //  private String hostName;
-  private String hostName = "http://localhost:8080";
+  private static String hostName = "http://localhost:8080";
 
   @Autowired
   StockDataRepository repository;
 
-  private StockPriceServer stockPriceServer;
+  private static StockPriceServer stockPriceServer;
 
 
   /**
@@ -224,7 +224,7 @@ public class StockPriceControllerIntegrationTest {
   }
 
   @BeforeClass
-  public void setUpServer() {
+  public static void setUpServer() {
     stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
         .target(StockPriceServer.class, hostName);
   }
