@@ -1,8 +1,9 @@
 package org.galatea.starter.domain.rpsy;
 
-import java.util.List;
 import org.galatea.starter.domain.StockData;
 import org.springframework.data.mongodb.repository.MongoRepository;
+
+import java.util.List;
 
 public interface StockDataRepository extends MongoRepository<StockData, String> {
 

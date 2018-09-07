@@ -2,9 +2,10 @@ package org.galatea.starter.domain;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+
 import java.util.HashMap;
 import javax.persistence.ElementCollection;
-import lombok.Data;
 
 @Data
 public class StockDataMessage {

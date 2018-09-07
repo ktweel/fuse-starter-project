@@ -1,7 +1,6 @@
 package org.galatea.starter.entrypoint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import javax.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -11,10 +10,12 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
+
+
 /**
  * A centralized REST handler that intercepts exceptions thrown by controller calls, enabling a
  * custom response to be returned.
- *
  * The returned ResponseEntity body object will be serialised into JSON (hence the need for the
  * ApiError wrapper class).
  */
