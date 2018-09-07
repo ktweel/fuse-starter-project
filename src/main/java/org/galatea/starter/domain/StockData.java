@@ -9,13 +9,13 @@ import javax.persistence.Table;
 import lombok.Data;
 import lombok.NonNull;
 
-@Entity
+//@Entity
 @Data
-@Table(name="stock")
+//@Table(name="stock")
 public class StockData {
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long id;
+//  @GeneratedValue(strategy = GenerationType.AUTO)
+  private String id;
 
   @NonNull
   @Column(name="stockSymbol")

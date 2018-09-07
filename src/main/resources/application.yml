@@ -17,6 +17,9 @@ spring:
       hibernate:
          ddl-auto: update
       database-platform: org.hibernate.dialect.MySQLDialect
+   data:
+      mongodb:
+         uri: mongodb://ktweel:redyellowblue710@ds239682.mlab.com:39682/stockpricedata
 mvc:
    settleMissionPath: /settlementEngine
    getMissionPath: /settlementEngine/mission/
