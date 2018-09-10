@@ -2,6 +2,10 @@ package org.galatea.starter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.opengamma.strata.basics.ReferenceData;
+import com.opengamma.strata.basics.date.HolidayCalendar;
+import com.opengamma.strata.basics.date.HolidayCalendarId;
+import com.opengamma.strata.basics.date.HolidayCalendarIds;
 import feign.Feign;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
@@ -30,9 +34,11 @@ public class AppConfig {
         .target(AlphaVantageServer.class, uri);
   }
 
-
-
-
+  @Bean
+  HolidayCalendar holidayCalendar() {
+    HolidayCalendarId holidayCalendarId = HolidayCalendarIds.NYSE;
+    return holidayCalendarId.resolve(ReferenceData.standard());
+  }
 
 }
 

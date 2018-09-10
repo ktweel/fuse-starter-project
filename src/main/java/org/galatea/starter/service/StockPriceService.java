@@ -1,12 +1,12 @@
 package org.galatea.starter.service;
 
+import com.opengamma.strata.basics.date.HolidayCalendar;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.domain.AlphaVantageReturnMessage;
 import org.galatea.starter.domain.StockDataMessage;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,7 @@ public class StockPriceService {
 
   private final DatabaseService databaseService;
   private final AlphaVantageService alphaVantageService;
+  private final HolidayCalendar holidayCalendar;
 
 
   /**
@@ -105,8 +106,8 @@ public class StockPriceService {
   }
 
   /**
-   * Generate list of desired dates based on number of days requested, excluding weekend dates.
-   * TODO: exclude holidays from date list
+   * Generate list of desired dates based on number of days requested, excluding weekend dates,
+   * stock market holidays, and stock market closures.
    */
   private List<String> getListDates(int days) {
     LocalDate today = LocalDate.now();
@@ -115,7 +116,7 @@ public class StockPriceService {
     while (dates.size() < days) {
       //increment numDaysChecked regardless of whether date added to list or not
       LocalDate day = today.minusDays(numDaysChecked++);
-      if (day.getDayOfWeek() != DayOfWeek.SATURDAY && day.getDayOfWeek() != DayOfWeek.SUNDAY) {
+      if (holidayCalendar.isBusinessDay(day)) {
         dates.add(day.toString());
       }
     }
