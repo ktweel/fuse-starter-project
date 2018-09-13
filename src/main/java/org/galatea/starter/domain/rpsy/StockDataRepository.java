@@ -10,4 +10,6 @@ public interface StockDataRepository extends MongoRepository<StockData, String> 
   List<StockData> findByStockSymbolAndDateIn(String stockSymbol, List<String> dates);
 
   List<StockData> findByStockSymbol(String stockSymbol);
+
+  void deleteByStockSymbol(String stockSymbol);
 }

@@ -50,8 +50,6 @@ public class StockPriceControllerIntegrationTest {
   @Test
   public void testPrice() {
     String symbol = "MSFT";
-//    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-//        .target(StockPriceServer.class, hostName);
 
     StockDataMessage priceResponse = stockPriceServer.priceEndpoint(symbol, 2);
     log.info(priceResponse.toString());
@@ -64,8 +62,6 @@ public class StockPriceControllerIntegrationTest {
   @Test
   public void testPriceCallAlphaVantage() throws JsonProcessingException {
     String symbol = "DNKN";
-//    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-//        .target(StockPriceServer.class, hostName);
 
     StockDataMessage message = stockPriceServer.priceEndpointNoDays(symbol);
     int numDataPoints = message.getTimeSeriesData().size();
@@ -82,8 +78,6 @@ public class StockPriceControllerIntegrationTest {
   @Test
   public void testPriceNoAlphaVantage() {
     String symbol = "MSFT";
-//    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-//        .target(StockPriceServer.class, hostName);
 
     StockDataMessage message = stockPriceServer.priceEndpointNoDays(symbol);
     int numDataPoints = message.getTimeSeriesData().size();
@@ -107,8 +101,6 @@ public class StockPriceControllerIntegrationTest {
   @Test
   public void testPriceDatabaseAndAlphaVantage() {
     String symbol = "MSFT";
-//    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-//        .target(StockPriceServer.class, hostName);
 
     StockDataMessage message = stockPriceServer.priceEndpointNoDays(symbol);
     int numDataPoints = message.getTimeSeriesData().size();
@@ -128,8 +120,6 @@ public class StockPriceControllerIntegrationTest {
    */
   @Test
   public void testInvalidSymbol() {
-//    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-//        .target(StockPriceServer.class, hostName);
 
     try {
       stockPriceServer.priceEndpoint("MSFTAAAA", 2);
@@ -145,8 +135,6 @@ public class StockPriceControllerIntegrationTest {
    */
   @Test
   public void testNoSymbol() {
-//    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-//        .target(StockPriceServer.class, hostName);
 
     try {
       stockPriceServer.priceEndpointNoSymbol(2);
@@ -180,8 +168,6 @@ public class StockPriceControllerIntegrationTest {
    */
   @Test
   public void testAlphaVantageFull() {
-//    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-//        .target(StockPriceServer.class, hostName);
 
     String symbol = "FB";
     StockDataMessage message = stockPriceServer.priceEndpointNoDays(symbol);
@@ -200,8 +186,6 @@ public class StockPriceControllerIntegrationTest {
   @Test
   public void testStockDump() {
 
-//    StockPriceServer stockPriceServer = Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-//        .target(StockPriceServer.class, hostName);
     StockDataMessage message = stockPriceServer.priceEndpointNoDays("MSFT");
     int curr_size = message.getTimeSeriesData().size();
     stockPriceServer.priceEndpoint("MSFT", curr_size + 10);
@@ -231,7 +215,6 @@ public class StockPriceControllerIntegrationTest {
 
   @After
   public void pauseAfterTest() throws InterruptedException {
-    repository.deleteAll();
     TimeUnit.SECONDS.sleep(1);
 }
 

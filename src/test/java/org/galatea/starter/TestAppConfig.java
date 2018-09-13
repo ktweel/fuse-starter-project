@@ -23,28 +23,28 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class TestAppConfig {
 
-
-  @Value("${alpha-vantage.uri}")
-  private String uri;
-
-  @Bean
-  ObjectMapper objectMapper() {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
-    return mapper;
-  }
-
-  @Bean
-  AlphaVantageServer alphaVantageServer() {
-    return Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
-        .target(AlphaVantageServer.class, uri);
-  }
-
-  @Bean
-  HolidayCalendar holidayCalendar() {
-    HolidayCalendarId holidayCalendarId = HolidayCalendarIds.NYSE;
-    return holidayCalendarId.resolve(ReferenceData.standard());
-  }
+//
+//  @Value("${alpha-vantage.uri}")
+//  private String uri;
+//
+//  @Bean
+//  ObjectMapper objectMapper() {
+//    ObjectMapper mapper = new ObjectMapper();
+//    mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
+//    return mapper;
+//  }
+//
+//  @Bean
+//  AlphaVantageServer alphaVantageServer() {
+//    return Feign.builder().decoder(new JacksonDecoder()).encoder(new JacksonEncoder())
+//        .target(AlphaVantageServer.class, uri);
+//  }
+//
+//  @Bean
+//  HolidayCalendar holidayCalendar() {
+//    HolidayCalendarId holidayCalendarId = HolidayCalendarIds.NYSE;
+//    return holidayCalendarId.resolve(ReferenceData.standard());
+//  }
 
 //
 //  @Bean
