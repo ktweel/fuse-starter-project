@@ -41,6 +41,10 @@ public class StockPriceControllerTest extends ASpringTest {
     mvc = MockMvcBuilders.webAppContextSetup(context).build();
   }
 
+  /**
+   * Basic endpoint test
+   * @throws Exception from MockMvc
+   */
   @Test
   public void testGetPrice() throws Exception {
     MvcResult result = mvc.perform(get("/price?stock=MSFT&days=3")).andExpect(
@@ -55,6 +59,10 @@ public class StockPriceControllerTest extends ASpringTest {
 
   }
 
+  /**
+   * test call in which data should be in database
+   * @throws Exception from MockMvc
+   */
   @Test
   public void testDatabase() throws Exception {
     MvcResult result = mvc.perform(get("/price?stock=MSFT&days=3")).andExpect(
@@ -69,6 +77,10 @@ public class StockPriceControllerTest extends ASpringTest {
 
   }
 
+  /**
+   * test call in which all data retrieved from alpha vantage
+   * @throws Exception from MockMvc
+   */
   @Test
   public void testAlphaVantageCall() throws Exception {
 
@@ -84,6 +96,10 @@ public class StockPriceControllerTest extends ASpringTest {
 
   }
 
+  /**
+   * test database dump
+   * @throws Exception from MockMvc
+   */
   @Test
   public void testDatabaseDump() throws Exception {
 
@@ -101,6 +117,10 @@ public class StockPriceControllerTest extends ASpringTest {
 
   }
 
+  /**
+   * test negative days value
+   * @throws Exception from MockMvc
+   */
   @Test
   public void testInvalidDays() throws Exception {
 
@@ -112,6 +132,10 @@ public class StockPriceControllerTest extends ASpringTest {
     assertThat(json).contains("must be greater than or equal to 0");
   }
 
+  /**
+   * test no symbol given
+   * @throws Exception from MockMvc
+   */
   @Test
   public void testNoSymbol() throws Exception {
 
@@ -123,6 +147,10 @@ public class StockPriceControllerTest extends ASpringTest {
     assertThat(json).contains("Required String parameter 'stock' is not present");
   }
 
+  /**
+   * test invalid stock symbol
+   * @throws Exception from MockMvc
+   */
   @Test
   public void testInvalidSymbol() throws Exception {
 
@@ -134,7 +162,11 @@ public class StockPriceControllerTest extends ASpringTest {
     assertThat(json).contains("Invalid API call");
   }
 
-
+  /**
+   * test call in which some data retrieved from database and some data
+   * retrieved from alpha vantage
+   * @throws Exception
+   */
   @Test
   public void testAlphaVantageAndDB() throws Exception {
 
@@ -151,6 +183,10 @@ public class StockPriceControllerTest extends ASpringTest {
 
   }
 
+  /**
+   * remove database entries to reset tests
+   * @throws Exception
+   */
   @After
   public void cleanup() throws Exception{
     repository.deleteByStockSymbol("DNKN");

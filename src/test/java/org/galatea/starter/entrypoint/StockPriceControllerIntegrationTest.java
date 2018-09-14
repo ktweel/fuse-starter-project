@@ -189,7 +189,6 @@ public class StockPriceControllerIntegrationTest {
     StockDataMessage message = stockPriceServer.priceEndpointNoDays("MSFT");
     int curr_size = message.getTimeSeriesData().size();
     stockPriceServer.priceEndpoint("MSFT", curr_size + 10);
-    stockPriceServer.priceEndpoint("AAPL", 3);
     stockPriceServer.priceEndpoint("MSFT", 8);
 
     StockDataMessage databaseDump = stockPriceServer.priceEndpointNoDays("MSFT");

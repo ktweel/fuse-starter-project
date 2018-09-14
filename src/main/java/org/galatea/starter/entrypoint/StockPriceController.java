@@ -31,8 +31,8 @@ public class StockPriceController {
    * @return StockDataMessage containing relevant stock price data
    */
   @RequestMapping(value = "/price", produces = "application/json")
-  public StockDataMessage getStockPrices(@Size(min = 1) @RequestParam(value = "stock") String stock,
-       @Min(0) @RequestParam(value = "days", required = false) Integer days) {
+  public StockDataMessage getStockPrices(@Size(min = 1) @RequestParam(value = "stock")
+      String stock, @Min(0) @RequestParam(value = "days", required = false) Integer days) {
     if (days == null) {
       return service.getPriceData(stock.toUpperCase());
     } else {

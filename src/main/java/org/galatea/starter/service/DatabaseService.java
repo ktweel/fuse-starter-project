@@ -17,6 +17,9 @@ public class DatabaseService {
 
   private final StockDataRepository repository;
 
+  /**
+   * Save price data for given date and stock to database
+   */
   public void save(String symbol, String date, AlphaVantageStockPriceData priceData) {
     repository.save(new StockData(symbol, date, priceData));
   }
