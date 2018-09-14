@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 
 /**
@@ -30,7 +31,7 @@ public class StockPriceController {
    * @return StockDataMessage containing relevant stock price data
    */
   @RequestMapping(value = "/price", produces = "application/json")
-  public StockDataMessage getStockPrices(@RequestParam(value = "stock") String stock,
+  public StockDataMessage getStockPrices(@Size(min = 1) @RequestParam(value = "stock") String stock,
        @Min(0) @RequestParam(value = "days", required = false) Integer days) {
     if (days == null) {
       return service.getPriceData(stock.toUpperCase());
