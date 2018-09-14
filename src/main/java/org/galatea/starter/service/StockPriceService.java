@@ -79,7 +79,7 @@ public class StockPriceService {
   }
 
   /**
-   * Save data given dates from stockDataMessage to database.
+   * Save data for given dates from stockDataMessage to database.
    * @param dates list of relevant dates to be saved
    * @param stockDataMessage contains price data
    */
