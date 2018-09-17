@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.ASpringTest;
 import org.galatea.starter.domain.StockDataMessage;
@@ -52,10 +53,10 @@ public class StockPriceControllerTest extends ASpringTest {
 
     String json = result.getResponse().getContentAsString();
     log.info(json);
-    StockDataMessage stockDataMessage = mapper.readValue(json, StockDataMessage.class);
+    StockDataMessage[] stockDataMessage = mapper.readValue(json, StockDataMessage[].class);
     log.info(stockDataMessage.toString());
     assertFalse(json.contains("null"));
-    assertEquals(stockDataMessage.getTimeSeriesData().size(), 3);
+    assertEquals(stockDataMessage[0].getTimeSeriesData().size(), 3);
 
   }
 
@@ -70,10 +71,10 @@ public class StockPriceControllerTest extends ASpringTest {
 
     String json = result.getResponse().getContentAsString();
     log.info(json);
-    StockDataMessage stockDataMessage = mapper.readValue(json, StockDataMessage.class);
+    StockDataMessage[] stockDataMessage = mapper.readValue(json, StockDataMessage[].class);
     log.info(stockDataMessage.toString());
     assertFalse(json.contains("null"));
-    assertEquals(stockDataMessage.getTimeSeriesData().size(), 3);
+    assertEquals(stockDataMessage[0].getTimeSeriesData().size(), 3);
 
   }
 
@@ -89,10 +90,10 @@ public class StockPriceControllerTest extends ASpringTest {
 
     String json = result.getResponse().getContentAsString();
     log.info(json);
-    StockDataMessage stockDataMessage = mapper.readValue(json, StockDataMessage.class);
+    StockDataMessage[] stockDataMessage = mapper.readValue(json, StockDataMessage[].class);
     assertFalse(json.contains("null"));
     assertThat(json).contains("open").contains("close").contains("DNKN");
-    assertEquals(stockDataMessage.getTimeSeriesData().size(), 3);
+    assertEquals(stockDataMessage[0].getTimeSeriesData().size(), 3);
 
   }
 
@@ -108,12 +109,15 @@ public class StockPriceControllerTest extends ASpringTest {
 
     MvcResult result = mvc.perform(get("/price?stock=DNKN")).andExpect(
         status().isOk()).andReturn();
+    MvcResult msft = mvc.perform(get("/price?stock=MSFT")).andExpect(
+        status().isOk()).andReturn();
     String initialJson = initial.getResponse().getContentAsString();
     String json = result.getResponse().getContentAsString();
-    StockDataMessage stockDataMessage = mapper.readValue(json, StockDataMessage.class);
+    StockDataMessage[] stockDataMessage = mapper.readValue(json, StockDataMessage[].class);
     log.info(json);
+    log.info(msft.getResponse().getContentAsString());
     assertThat(json).isEqualTo(initialJson);
-    assertEquals(stockDataMessage.getTimeSeriesData().size(), 5);
+    assertEquals(stockDataMessage[0].getTimeSeriesData().size(), 5);
 
   }
 
@@ -144,7 +148,7 @@ public class StockPriceControllerTest extends ASpringTest {
 
     String json = result.getResponse().getContentAsString();
     log.info(json);
-    assertThat(json).contains("Required String parameter 'stock' is not present");
+    assertThat(json).contains("Required List parameter 'stock' is not present");
   }
 
   /**
@@ -155,7 +159,7 @@ public class StockPriceControllerTest extends ASpringTest {
   public void testInvalidSymbol() throws Exception {
 
     MvcResult result = mvc.perform(get("/price?stock=DNKNAAAAAAA&days=5")).andExpect(
-        status().is5xxServerError()).andReturn();
+        status().isBadRequest()).andReturn();
 
     String json = result.getResponse().getContentAsString();
     log.info(json);
@@ -184,12 +188,13 @@ public class StockPriceControllerTest extends ASpringTest {
   }
 
   /**
-   * remove database entries to reset tests
-   * @throws Exception
+   * remove database entries to reset tests and clear cache
+   * @throws Exception if error in MockMvc.perform()
    */
   @After
   public void cleanup() throws Exception{
     repository.deleteByStockSymbol("DNKN");
+    mvc.perform(get("/clearCache")).andReturn();
 
   }
 
