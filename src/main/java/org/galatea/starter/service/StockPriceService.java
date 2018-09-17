@@ -1,10 +1,12 @@
 package org.galatea.starter.service;
 
 import com.opengamma.strata.basics.date.HolidayCalendar;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.CacheConfig;
 import org.galatea.starter.domain.AlphaVantageReturnMessage;
+import org.galatea.starter.domain.StockData;
 import org.galatea.starter.domain.StockDataMessage;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -84,9 +86,13 @@ public class StockPriceService {
    * @param stockDataMessage contains price data
    */
   private void saveToDatabase(List<String> dates, StockDataMessage stockDataMessage) {
-    for (String d:dates) {
-      databaseService.save(stockDataMessage.getSymbol(), d, stockDataMessage.getTimeSeriesData(d));
-    }
+    String symbol = stockDataMessage.getSymbol();
+    List<StockData> stockData = dates.parallelStream()
+        .map(d -> new StockData(symbol, d, stockDataMessage.getTimeSeriesData(d)))
+        .collect(Collectors.toList());
+
+    databaseService.saveAll(stockData);
+
   }
 
   /**

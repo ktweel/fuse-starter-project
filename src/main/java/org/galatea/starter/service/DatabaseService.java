@@ -25,6 +25,13 @@ public class DatabaseService {
   }
 
   /**
+   * Save price data for stock data in list
+   */
+  public void saveAll(List<StockData> stockData) {
+    repository.save(stockData);
+  }
+
+  /**
    * returns StockDataMessage for the given symbol containing any price data for that stock that is
    * stored in the database.
    */
