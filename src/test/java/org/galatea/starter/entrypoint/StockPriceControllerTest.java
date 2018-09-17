@@ -54,7 +54,7 @@ public class StockPriceControllerTest extends ASpringTest {
     String json = result.getResponse().getContentAsString();
     log.info(json);
     StockDataMessage[] stockDataMessage = mapper.readValue(json, StockDataMessage[].class);
-    log.info(stockDataMessage.toString());
+    log.info(stockDataMessage[0].toString());
     assertFalse(json.contains("null"));
     assertEquals(stockDataMessage[0].getTimeSeriesData().size(), 3);
 
@@ -72,7 +72,7 @@ public class StockPriceControllerTest extends ASpringTest {
     String json = result.getResponse().getContentAsString();
     log.info(json);
     StockDataMessage[] stockDataMessage = mapper.readValue(json, StockDataMessage[].class);
-    log.info(stockDataMessage.toString());
+    log.info(stockDataMessage[0].toString());
     assertFalse(json.contains("null"));
     assertEquals(stockDataMessage[0].getTimeSeriesData().size(), 3);
 
@@ -169,7 +169,7 @@ public class StockPriceControllerTest extends ASpringTest {
   /**
    * test call in which some data retrieved from database and some data
    * retrieved from alpha vantage
-   * @throws Exception
+   * @throws Exception if error in MockMvc.perform()
    */
   @Test
   public void testAlphaVantageAndDB() throws Exception {

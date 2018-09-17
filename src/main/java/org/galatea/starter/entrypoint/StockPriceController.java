@@ -1,7 +1,6 @@
 package org.galatea.starter.entrypoint;
 
-import java.util.List;
-import java.util.stream.Collectors;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.domain.StockDataMessage;
@@ -11,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 

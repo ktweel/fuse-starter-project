@@ -17,7 +17,6 @@ public class AlphaVantageService {
   private final AlphaVantageServer alphaVantageServer;
   // number of datapoints returned when compact alpha vantage call is made
   private static final int COMPACT_DATA_LIMIT = 100;
-//  @Value("${alpha-vantage.key}")
   String apiKey;
 
   /**

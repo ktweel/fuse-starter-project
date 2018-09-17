@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class CacheController {
 
-  @CacheEvict(value = CacheConfig.CACHE_ONE, allEntries = true)
+  @CacheEvict(value = CacheConfig.STOCK_PRICE_CACHE, allEntries = true)
   @RequestMapping("/clearCache")
   public ResponseEntity<String> clearCache() {
     return new ResponseEntity<String>("Cache Cleared", HttpStatus.OK);
