@@ -3,7 +3,9 @@ package org.galatea.starter.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.AlphaVantageServer;
+import org.galatea.starter.AppConfig;
 import org.galatea.starter.domain.AlphaVantageReturnMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
@@ -15,6 +17,8 @@ public class AlphaVantageService {
   private final AlphaVantageServer alphaVantageServer;
   // number of datapoints returned when compact alpha vantage call is made
   private static final int COMPACT_DATA_LIMIT = 100;
+//  @Value("${alpha-vantage.key}")
+  String apiKey;
 
   /**
    * Makes api call to Alpha Vantage to retrieve data not persisted in database.
@@ -26,7 +30,7 @@ public class AlphaVantageService {
     log.info("Calling Alpha Vantage for symbol: {} and numDays: {}", symbol, numDays);
     long startTime = System.currentTimeMillis();
     AlphaVantageReturnMessage alphaVantageReturnMessage = alphaVantageServer
-        .alphaVantageApiCall(symbol, (numDays > COMPACT_DATA_LIMIT) ? "full" : "compact");
+        .alphaVantageApiCall(symbol, (numDays > COMPACT_DATA_LIMIT) ? "full" : "compact", apiKey);
     long endTime = System.currentTimeMillis();
     log.info("Alpha Vantage call completed in: {}ms", endTime - startTime);
     return alphaVantageReturnMessage;
