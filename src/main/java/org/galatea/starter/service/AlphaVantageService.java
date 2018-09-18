@@ -3,9 +3,7 @@ package org.galatea.starter.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.AlphaVantageServer;
-import org.galatea.starter.AppConfig;
 import org.galatea.starter.domain.AlphaVantageReturnMessage;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
