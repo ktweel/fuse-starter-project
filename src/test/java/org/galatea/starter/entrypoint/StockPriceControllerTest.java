@@ -98,6 +98,27 @@ public class StockPriceControllerTest extends ASpringTest {
   }
 
   /**
+   * test call with multiple stock symbols
+   * @throws Exception from MockMvc
+   */
+  @Test
+  public void testMultipleStocksymbols() throws Exception {
+
+    MvcResult result = mvc.perform(get("/price?stock=MSFT,IBM&days=3")).andExpect(
+        status().isOk()).andReturn();
+
+    String json = result.getResponse().getContentAsString();
+    log.info(json);
+    StockDataMessage[] stockDataMessage = mapper.readValue(json, StockDataMessage[].class);
+    assertThat(stockDataMessage.length).isEqualTo(2);
+    assertFalse(json.contains("null"));
+    assertThat(json).contains("open").contains("close").contains("MSFT");
+    assertEquals(stockDataMessage[0].getTimeSeriesData().size(), 3);
+    assertEquals(stockDataMessage[1].getTimeSeriesData().size(), 3);
+
+  }
+
+  /**
    * test database dump
    * @throws Exception from MockMvc
    */
@@ -109,13 +130,12 @@ public class StockPriceControllerTest extends ASpringTest {
 
     MvcResult result = mvc.perform(get("/price?stock=DNKN")).andExpect(
         status().isOk()).andReturn();
-    MvcResult msft = mvc.perform(get("/price?stock=MSFT")).andExpect(
-        status().isOk()).andReturn();
+
     String initialJson = initial.getResponse().getContentAsString();
     String json = result.getResponse().getContentAsString();
+
     StockDataMessage[] stockDataMessage = mapper.readValue(json, StockDataMessage[].class);
     log.info(json);
-    log.info(msft.getResponse().getContentAsString());
     assertThat(json).isEqualTo(initialJson);
     assertEquals(stockDataMessage[0].getTimeSeriesData().size(), 5);
 
