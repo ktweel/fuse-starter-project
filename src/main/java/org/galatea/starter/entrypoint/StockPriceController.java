@@ -1,6 +1,5 @@
 package org.galatea.starter.entrypoint;
 
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.domain.StockDataMessage;
@@ -29,18 +28,18 @@ public class StockPriceController {
 
   /**
    * method handling /price requests.
-   * @param stock stock symbol for which data requested
+   * @param stocks stock symbol for which data requested
    * @param days number of days for which data requested
    * @return StockDataMessage containing relevant stock price data
    */
   @RequestMapping(value = "/price", produces = "application/json")
   public List<StockDataMessage> getStockPrices(@Size(min = 1) @RequestParam(value = "stock")
-      List<String> stock, @Min(0) @RequestParam(value = "days", required = false) Integer days) {
+      List<String> stocks, @Min(0) @RequestParam(value = "days", required = false) Integer days) {
     if (days == null) {
-      return stock.parallelStream().map(s -> service.getPriceData(s.toUpperCase()))
+      return stocks.parallelStream().map(s -> service.getPriceData(s.toUpperCase()))
           .collect(Collectors.toList());
     } else {
-      return stock.parallelStream().map(s -> service.getPriceData(s.toUpperCase(), days))
+      return stocks.parallelStream().map(s -> service.getPriceData(s.toUpperCase(), days))
           .collect(Collectors.toList());
     }
 
