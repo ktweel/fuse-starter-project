@@ -25,7 +25,7 @@ public class DatabaseService {
   }
 
   /**
-   * Save price data for stock data in list.
+   * Save each StockData object in list to repository.
    */
   public void saveAll(List<StockData> stockData) {
     repository.save(stockData);
