@@ -17,7 +17,7 @@ public class AlphaVantageService {
   private final AlphaVantageServer alphaVantageServer;
   // number of datapoints returned when compact alpha vantage call is made
   private static final int COMPACT_DATA_LIMIT = 100;
-  String apiKey;
+  private String apiKey;
 
   /**
    * Makes api call to Alpha Vantage to retrieve data not persisted in database.
