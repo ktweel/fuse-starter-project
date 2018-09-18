@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 
 /**
@@ -25,17 +28,19 @@ public class StockPriceController {
 
   /**
    * method handling /price requests.
-   * @param stock stock symbol for which data requested
+   * @param stocks stock symbol for which data requested
    * @param days number of days for which data requested
    * @return StockDataMessage containing relevant stock price data
    */
   @RequestMapping(value = "/price", produces = "application/json")
-  public StockDataMessage getStockPrices(@RequestParam(value = "stock") String stock,
-       @Min(0) @RequestParam(value = "days", required = false) Integer days) {
+  public List<StockDataMessage> getStockPrices(@Size(min = 1) @RequestParam(value = "stock")
+      List<String> stocks, @Min(0) @RequestParam(value = "days", required = false) Integer days) {
     if (days == null) {
-      return service.getPriceData(stock.toUpperCase());
+      return stocks.parallelStream().map(s -> service.getPriceData(s.toUpperCase()))
+          .collect(Collectors.toList());
     } else {
-      return service.getPriceData(stock.toUpperCase(), days);
+      return stocks.parallelStream().map(s -> service.getPriceData(s.toUpperCase(), days))
+          .collect(Collectors.toList());
     }
 
   }

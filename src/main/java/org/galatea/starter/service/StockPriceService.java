@@ -3,13 +3,17 @@ package org.galatea.starter.service;
 import com.opengamma.strata.basics.date.HolidayCalendar;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.galatea.starter.CacheConfig;
 import org.galatea.starter.domain.AlphaVantageReturnMessage;
+import org.galatea.starter.domain.StockData;
 import org.galatea.starter.domain.StockDataMessage;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Service which requests data from Alpha Vantage and transforms it to return desired dates.
@@ -31,6 +35,7 @@ public class StockPriceService {
    * @param days number of days for which data should be returned
    * @return string representing json for stock price data
    */
+  @Cacheable(CacheConfig.STOCK_PRICE_CACHE)
   public StockDataMessage getPriceData(String symbol, int days) {
 
     log.info("Retrieving price data for symbol: {} and {} days", symbol, days);
@@ -76,14 +81,18 @@ public class StockPriceService {
   }
 
   /**
-   * Save data given dates from stockDataMessage to database.
+   * Save data for given dates from stockDataMessage to database.
    * @param dates list of relevant dates to be saved
    * @param stockDataMessage contains price data
    */
   private void saveToDatabase(List<String> dates, StockDataMessage stockDataMessage) {
-    for (String d:dates) {
-      databaseService.save(stockDataMessage.getSymbol(), d, stockDataMessage.getTimeSeriesData(d));
-    }
+    String symbol = stockDataMessage.getSymbol();
+    List<StockData> stockData = dates.parallelStream()
+        .map(d -> new StockData(symbol, d, stockDataMessage.getTimeSeriesData(d)))
+        .collect(Collectors.toList());
+
+    databaseService.saveAll(stockData);
+
   }
 
   /**

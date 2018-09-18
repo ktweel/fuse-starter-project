@@ -20,6 +20,8 @@ public class AppConfig {
 
   @Value("${alpha-vantage.uri}")
   private String uri;
+  @Value("${alpha-vantage.key}")
+  String apiKey;
 
   @Bean
   ObjectMapper objectMapper() {
@@ -38,6 +40,11 @@ public class AppConfig {
   HolidayCalendar holidayCalendar() {
     HolidayCalendarId holidayCalendarId = HolidayCalendarIds.NYSE;
     return holidayCalendarId.resolve(ReferenceData.standard());
+  }
+
+  @Bean
+  String apiKey() {
+    return apiKey;
   }
 
 }

@@ -1,6 +1,7 @@
 package org.galatea.starter.entrypoint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -72,6 +73,20 @@ public class RestExceptionHandler {
     log.error("Runtime exception: ", exception);
     ApiError error = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, exception.toString());
     return buildResponseEntity(error);
+  }
+
+  @ExceptionHandler(FeignException.class)
+  protected ResponseEntity<Object> handleFeignException(final FeignException exception) {
+    log.error("Feign exception: ", exception);
+    ApiError error;
+    if (exception.getMessage().contains("Invalid API call")) {
+      String message = "Invalid API call.  Ensure arguments correctly formatted";
+      error = new ApiError(HttpStatus.BAD_REQUEST, message);
+    } else {
+      error = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, exception.toString());
+    }
+    return buildResponseEntity(error);
+
   }
 
 

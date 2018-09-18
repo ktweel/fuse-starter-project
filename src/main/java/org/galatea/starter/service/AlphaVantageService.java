@@ -15,6 +15,7 @@ public class AlphaVantageService {
   private final AlphaVantageServer alphaVantageServer;
   // number of datapoints returned when compact alpha vantage call is made
   private static final int COMPACT_DATA_LIMIT = 100;
+  private String apiKey;
 
   /**
    * Makes api call to Alpha Vantage to retrieve data not persisted in database.
@@ -26,7 +27,7 @@ public class AlphaVantageService {
     log.info("Calling Alpha Vantage for symbol: {} and numDays: {}", symbol, numDays);
     long startTime = System.currentTimeMillis();
     AlphaVantageReturnMessage alphaVantageReturnMessage = alphaVantageServer
-        .alphaVantageApiCall(symbol, (numDays > COMPACT_DATA_LIMIT) ? "full" : "compact");
+        .alphaVantageApiCall(symbol, (numDays > COMPACT_DATA_LIMIT) ? "full" : "compact", apiKey);
     long endTime = System.currentTimeMillis();
     log.info("Alpha Vantage call completed in: {}ms", endTime - startTime);
     return alphaVantageReturnMessage;
