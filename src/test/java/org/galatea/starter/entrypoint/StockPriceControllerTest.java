@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.galatea.starter.ASpringTest;
 import org.galatea.starter.domain.StockDataMessage;
